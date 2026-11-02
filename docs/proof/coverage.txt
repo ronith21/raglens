@@ -1,0 +1,32 @@
+_______________ coverage: platform linux, python 3.12.13-final-0 _______________
+
+Name                                        Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------
+src/raglens/__init__.py                         1      0   100%
+src/raglens/api/__init__.py                     0      0   100%
+src/raglens/chunking/__init__.py                2      0   100%
+src/raglens/chunking/splitter.py              168     30    82%   12, 16, 38, 66-69, 87, 98, 102-108, 114, 144, 177, 181, 198, 219-223, 253-255, 258
+src/raglens/cli/__init__.py                     0      0   100%
+src/raglens/config.py                          24      0   100%
+src/raglens/embed/__init__.py                   4      0   100%
+src/raglens/embed/base.py                      14      2    86%   16, 24
+src/raglens/embed/hash.py                      37      1    97%   47
+src/raglens/embed/sentence_transformer.py      43      8    81%   40-42, 58, 66-75
+src/raglens/eval/__init__.py                    0      0   100%
+src/raglens/ingest/__init__.py                  3      0   100%
+src/raglens/ingest/models.py                   22      0   100%
+src/raglens/ingest/parser.py                   65      0   100%
+src/raglens/llm/__init__.py                     0      0   100%
+src/raglens/pipeline/__init__.py                0      0   100%
+src/raglens/rerank/__init__.py                  2      0   100%
+src/raglens/rerank/cross_encoder.py            46     17    63%   18, 39, 45, 55, 60, 66-89
+src/raglens/retrieve/__init__.py                6      0   100%
+src/raglens/retrieve/base.py                   14      1    93%   27
+src/raglens/retrieve/bm25.py                   41      5    88%   41, 50, 71, 80-81
+src/raglens/retrieve/dense.py                  39      4    90%   27-28, 52, 66
+src/raglens/retrieve/hybrid.py                 51      1    98%   19
+src/raglens/retrieve/store.py                  32      1    97%   48
+-------------------------------------------------------------------------
+TOTAL                                         614     70    89%
+Required test coverage of 85.0% reached. Total coverage: 88.60%
+============================= 27 passed in 38.31s ==============================
