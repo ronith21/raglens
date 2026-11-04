@@ -13,7 +13,11 @@ class BaseEmbedder(ABC):
     @abstractmethod
     def dimension(self) -> int:
         """Dimensionality of the produced embedding vectors."""
-        pass
+
+    @property
+    def name(self) -> str:
+        """Human-readable identifier of the embedding backend."""
+        return type(self).__name__
 
     @abstractmethod
     def embed_texts(self, texts: list[str]) -> npt.NDArray[np.float32]:
@@ -21,7 +25,6 @@ class BaseEmbedder(ABC):
 
         Vectors should be L2-normalized so that inner products correspond to cosine similarities.
         """
-        pass
 
     def embed_query(self, text: str) -> npt.NDArray[np.float32]:
         """Embed a single query string into a 1D float32 numpy array of length `dimension`."""

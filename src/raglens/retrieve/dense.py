@@ -27,13 +27,23 @@ class DenseRetriever(BaseRetriever):
             self.index = None
             return
 
-        texts = [chunk.text for chunk in self.chunks]
-        embeddings = self.embedder.embed_texts(texts)
+        embeddings = self.embedder.embed_texts([chunk.text for chunk in self.chunks])
+        self.index = faiss.IndexFlatIP(embeddings.shape[1])
+        self.index.add(np.ascontiguousarray(embeddings, dtype=np.float32))
 
-        dim = embeddings.shape[1]
-        self.index = faiss.IndexFlatIP(dim)
-        embeddings_c = np.ascontiguousarray(embeddings, dtype=np.float32)
-        self.index.add(embeddings_c)
+    def attach_index(self, chunks: list[Chunk], index: "faiss.Index") -> None:
+        """Use a pre-built FAISS index (e.g. loaded from disk) instead of re-embedding."""
+        if index.ntotal != len(chunks):
+            raise ValueError(
+                f"FAISS index holds {index.ntotal} vectors but {len(chunks)} chunks were given"
+            )
+        if index.d != self.embedder.dimension:
+            raise ValueError(
+                f"FAISS index dimension {index.d} does not match embedder dimension "
+                f"{self.embedder.dimension}"
+            )
+        self.chunks = list(chunks)
+        self.index = index
 
     def retrieve(self, query: str, top_k: int = 5) -> list[SearchResult]:
         """Retrieve top_k chunks by cosine similarity."""
@@ -42,19 +52,17 @@ class DenseRetriever(BaseRetriever):
 
         query_vec = self.embedder.embed_query(query)
         query_mat = np.ascontiguousarray(query_vec.reshape(1, -1), dtype=np.float32)
-
-        actual_k = min(top_k, len(self.chunks))
-        scores, indices = self.index.search(query_mat, actual_k)
+        scores, indices = self.index.search(query_mat, min(top_k, len(self.chunks)))
 
         results: list[SearchResult] = []
-        for rank, (idx, score) in enumerate(zip(indices[0], scores[0], strict=False), start=1):
+        for idx, score in zip(indices[0], scores[0], strict=True):
             if idx < 0 or idx >= len(self.chunks):
                 continue
             results.append(
                 SearchResult(
                     chunk=self.chunks[idx],
                     score=float(score),
-                    rank=rank,
+                    rank=len(results) + 1,
                     retriever_name="dense",
                     metadata={"cosine_similarity": float(score)},
                 )
@@ -63,6 +71,4 @@ class DenseRetriever(BaseRetriever):
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize metadata and chunk mappings."""
-        return {
-            "chunks": [c.model_dump() for c in self.chunks],
-        }
+        return {"chunks": [c.model_dump() for c in self.chunks]}
