@@ -1,69 +1,251 @@
+pytest --cov=raglens --cov-report=term-missing tests/
 ============================= test session starts ==============================
-platform linux -- Python 3.12.13, pytest-9.2.0, pluggy-1.7.0 -- /home/jules/.pyenv/versions/3.12.13/bin/python3.12
+platform linux -- Python 3.11.18, pytest-9.2.0, pluggy-1.7.0 -- /home/claude/raglens/.venv/bin/python3.11
 cachedir: .pytest_cache
-rootdir: /app
+rootdir: /home/claude/raglens
 configfile: pyproject.toml
-plugins: anyio-4.16.0, cov-7.1.0
-collecting ... collected 27 items
+plugins: platformdirs-4.14.3, anyio-4.16.0, cov-7.1.0
+collecting ... collected 188 items
 
-tests/test_chunking.py::test_chunker_overlap_greater_than_or_equal_to_size_rejected PASSED [  3%]
-tests/test_chunking.py::test_chunk_empty_document PASSED                 [  7%]
-tests/test_chunking.py::test_chunk_unicode_characters PASSED             [ 11%]
-tests/test_chunking.py::test_one_huge_paragraph PASSED                   [ 14%]
-tests/test_chunking.py::test_pdf_page_tracking_in_chunks PASSED          [ 18%]
-tests/test_chunking.py::test_sentence_aware_chunker PASSED               [ 22%]
-tests/test_config.py::test_settings_default PASSED                       [ 25%]
-tests/test_embed.py::test_hash_embedder_dimension_and_shape PASSED       [ 29%]
-tests/test_embed.py::test_hash_embedder_invalid_dimension PASSED         [ 33%]
-tests/test_embed.py::test_hash_embedder_determinism PASSED               [ 37%]
-tests/test_embed.py::test_hash_embedder_normalization PASSED             [ 40%]
-tests/test_embed.py::test_hash_embedder_empty_list PASSED                [ 44%]
-tests/test_embed.py::test_sentence_transformer_embedder_fallback PASSED  [ 48%]
-tests/test_embed.py::test_sentence_transformer_embedder_raises_when_no_fallback PASSED [ 51%]
-tests/test_ingest.py::test_empty_text_file PASSED                        [ 55%]
-tests/test_ingest.py::test_empty_markdown_file PASSED                    [ 59%]
-tests/test_ingest.py::test_unicode_handling PASSED                       [ 62%]
-tests/test_ingest.py::test_pdf_page_tracking PASSED                      [ 66%]
-tests/test_ingest.py::test_unsupported_file_format PASSED                [ 70%]
-tests/test_ingest.py::test_ingest_directory PASSED                       [ 74%]
-tests/test_ingest.py::test_deterministic_doc_id PASSED                   [ 77%]
-tests/test_retrieval.py::test_reciprocal_rank_fusion_hand_computed_example PASSED [ 81%]
-tests/test_retrieval.py::test_retrieval_determinism PASSED               [ 85%]
-tests/test_retrieval.py::test_index_save_load_round_trip PASSED          [ 88%]
+tests/test_api.py::test_health PASSED                                    [  0%]
+tests/test_api.py::test_documents PASSED                                 [  1%]
+tests/test_api.py::test_ask_answers_with_citations PASSED                [  1%]
+tests/test_api.py::test_ask_refuses_out_of_scope PASSED                  [  2%]
+tests/test_api.py::test_ask_validation_errors[payload0] PASSED           [  2%]
+tests/test_api.py::test_ask_validation_errors[payload1] PASSED           [  3%]
+tests/test_api.py::test_ask_validation_errors[payload2] PASSED           [  3%]
+tests/test_api.py::test_ask_validation_errors[payload3] PASSED           [  4%]
+tests/test_api.py::test_ask_validation_errors[payload4] PASSED           [  4%]
+tests/test_api.py::test_ask_validation_errors[payload5] PASSED           [  5%]
+tests/test_api.py::test_ask_validation_errors[payload6] PASSED           [  5%]
+tests/test_api.py::test_ask_blank_question_rejected PASSED               [  6%]
+tests/test_api.py::test_ask_llm_failure_maps_to_502 PASSED               [  6%]
+tests/test_api.py::test_ask_empty_index_conflict PASSED                  [  7%]
+tests/test_api.py::test_ingest_upload_and_query PASSED                   [  7%]
+tests/test_api.py::test_eval_endpoint PASSED                             [  8%]
+tests/test_api.py::test_eval_missing_dataset PASSED                      [  9%]
+tests/test_api.py::test_eval_latest PASSED                               [  9%]
+tests/test_api.py::test_swagger_docs_served_without_cdn PASSED           [ 10%]
+tests/test_api.py::test_openapi_schema_lists_endpoints PASSED            [ 10%]
+tests/test_api.py::test_request_id_header_round_trip PASSED              [ 11%]
+tests/test_api.py::test_metrics_and_analytics_after_asks PASSED          [ 11%]
+tests/test_api.py::test_ask_multi_query_and_evidence PASSED              [ 12%]
+tests/test_api.py::test_llm_error_counted PASSED                         [ 12%]
+tests/test_api.py::test_api_key_protects_write_and_analytics_endpoints PASSED [ 13%]
+tests/test_api.py::test_query_log_stores_redacted_question PASSED        [ 13%]
+tests/test_chunking.py::test_chunker_overlap_greater_than_or_equal_to_size_rejected PASSED [ 14%]
+tests/test_chunking.py::test_chunk_empty_document PASSED                 [ 14%]
+tests/test_chunking.py::test_chunk_unicode_characters PASSED             [ 15%]
+tests/test_chunking.py::test_one_huge_paragraph PASSED                   [ 15%]
+tests/test_chunking.py::test_overlap_is_bounded_and_text_fully_covered PASSED [ 16%]
+tests/test_chunking.py::test_chunk_metadata_carries_title_and_slug PASSED [ 17%]
+tests/test_chunking.py::test_pdf_page_tracking_in_chunks PASSED          [ 17%]
+tests/test_chunking.py::test_sentence_aware_chunker PASSED               [ 18%]
+tests/test_chunking.py::test_sentence_aware_chunker_splits_overlong_sentence PASSED [ 18%]
+tests/test_chunking.py::test_custom_separators_and_hard_split PASSED     [ 19%]
+tests/test_cli.py::test_ingest_then_ask PASSED                           [ 19%]
+tests/test_cli.py::test_ask_json_and_refusal PASSED                      [ 20%]
+tests/test_cli.py::test_ask_rejects_unknown_retriever PASSED             [ 20%]
+tests/test_cli.py::test_ask_reports_llm_errors PASSED                    [ 21%]
+tests/test_cli.py::test_ingest_missing_path PASSED                       [ 21%]
+tests/test_cli.py::test_eval_single_config PASSED                        [ 22%]
+tests/test_cli.py::test_synth_writes_jsonl PASSED                        [ 22%]
+tests/test_config.py::test_settings_default PASSED                       [ 23%]
+tests/test_config.py::test_settings_read_environment PASSED              [ 23%]
+tests/test_embed.py::test_hash_embedder_dimension_and_shape PASSED       [ 24%]
+tests/test_embed.py::test_hash_embedder_invalid_dimension PASSED         [ 25%]
+tests/test_embed.py::test_hash_embedder_determinism PASSED               [ 25%]
+tests/test_embed.py::test_hash_embedder_normalization PASSED             [ 26%]
+tests/test_embed.py::test_hash_embedder_ignores_stopwords_and_inflection PASSED [ 26%]
+tests/test_embed.py::test_hash_embedder_empty_list PASSED                [ 27%]
+tests/test_embed.py::test_sentence_transformer_embedder_fallback PASSED  [ 27%]
+tests/test_embed.py::test_sentence_transformer_embedder_raises_when_no_fallback PASSED [ 28%]
+tests/test_embed.py::test_sentence_transformer_embedder_uses_model PASSED [ 28%]
+tests/test_engine.py::test_builds_index_from_corpus_and_persists PASSED  [ 29%]
+tests/test_engine.py::test_reload_uses_persisted_index PASSED            [ 29%]
+tests/test_engine.py::test_ingest_is_idempotent_and_adds_new_files PASSED [ 30%]
+tests/test_engine.py::test_ingest_rejects_unsupported_file PASSED        [ 30%]
+tests/test_engine.py::test_rebuild_discards_existing_index PASSED        [ 31%]
+tests/test_engine.py::test_missing_corpus_leaves_empty_index PASSED      [ 31%]
+tests/test_engine.py::test_every_retriever_answers_with_citations[bm25] PASSED [ 32%]
+tests/test_engine.py::test_every_retriever_answers_with_citations[dense] PASSED [ 32%]
+tests/test_engine.py::test_every_retriever_answers_with_citations[hybrid] PASSED [ 33%]
+tests/test_engine.py::test_rerank_option_and_unknown_retriever PASSED    [ 34%]
+tests/test_engine.py::test_llm_override_and_embedder_factory PASSED      [ 34%]
+tests/test_engine.py::test_multi_query_pipeline_and_rewriter_refresh PASSED [ 35%]
+tests/test_eval.py::test_hit_and_recall PASSED                           [ 35%]
+tests/test_eval.py::test_reciprocal_rank PASSED                          [ 36%]
+tests/test_eval.py::test_ndcg_hand_computed PASSED                       [ 36%]
+tests/test_eval.py::test_answer_metrics PASSED                           [ 37%]
+tests/test_eval.py::test_dataset_round_trip_and_validation PASSED        [ 37%]
+tests/test_eval.py::test_shipped_dataset_meets_spec PASSED               [ 38%]
+tests/test_eval.py::test_evaluate_on_sample_corpus PASSED                [ 38%]
+tests/test_eval.py::test_synthetic_generation_is_reproducible PASSED     [ 39%]
+tests/test_eval.py::test_benchmark_writes_report_and_charts PASSED       [ 39%]
+tests/test_eval.py::test_token_f1_and_reference_recall_hand_computed PASSED [ 40%]
+tests/test_eval.py::test_refusal_accuracy_hand_computed PASSED           [ 40%]
+tests/test_eval.py::test_banking_datasets_are_valid_and_disjoint[banking_dev.jsonl] PASSED [ 41%]
+tests/test_eval.py::test_banking_datasets_are_valid_and_disjoint[banking_test.jsonl] PASSED [ 42%]
+tests/test_eval.py::test_report_breaks_down_by_kind PASSED               [ 42%]
+tests/test_eval.py::test_benchmark_flags PASSED                          [ 43%]
+tests/test_gate.py::test_specific_terms_are_names_and_numbers PASSED     [ 43%]
+tests/test_gate.py::test_compute_features_counts_titles_as_evidence PASSED [ 44%]
+tests/test_gate.py::test_rule_gate PASSED                                [ 44%]
+tests/test_gate.py::test_learned_gate_probability_and_round_trip PASSED  [ 45%]
+tests/test_gate.py::test_cost_and_threshold_hand_computed PASSED         [ 45%]
+tests/test_gate.py::test_train_separates_classes_and_metrics PASSED      [ 46%]
+tests/test_gate.py::test_train_gate_cli_writes_model_and_report PASSED   [ 46%]
+tests/test_gate.py::test_load_gate_modes PASSED                          [ 47%]
+tests/test_ingest.py::test_empty_text_file PASSED                        [ 47%]
+tests/test_ingest.py::test_empty_markdown_file PASSED                    [ 48%]
+tests/test_ingest.py::test_unicode_handling PASSED                       [ 48%]
+tests/test_ingest.py::test_pdf_page_tracking PASSED                      [ 49%]
+tests/test_ingest.py::test_unsupported_file_format PASSED                [ 50%]
+tests/test_ingest.py::test_ingest_directory PASSED                       [ 50%]
+tests/test_ingest.py::test_ingest_missing_directory PASSED               [ 51%]
+tests/test_ingest.py::test_deterministic_doc_id PASSED                   [ 51%]
+tests/test_ingest.py::test_doc_id_is_location_independent PASSED         [ 52%]
+tests/test_llm.py::test_fake_llm_is_extractive_cited_and_deterministic PASSED [ 52%]
+tests/test_llm.py::test_fake_llm_prefers_rare_terms PASSED               [ 53%]
+tests/test_llm.py::test_fake_llm_refuses_without_overlap PASSED          [ 53%]
+tests/test_llm.py::test_fake_llm_validates_arguments PASSED              [ 54%]
+tests/test_llm.py::test_ollama_success_sends_chat_payload PASSED         [ 54%]
+tests/test_llm.py::test_ollama_retries_then_succeeds PASSED              [ 55%]
+tests/test_llm.py::test_ollama_connection_error_message PASSED           [ 55%]
+tests/test_llm.py::test_openai_compat_success_and_auth_header PASSED     [ 56%]
+tests/test_llm.py::test_openai_compat_does_not_retry_client_errors PASSED [ 56%]
+tests/test_llm.py::test_openai_compat_rejects_malformed_response PASSED  [ 57%]
+tests/test_llm.py::test_openai_compat_requires_key PASSED                [ 57%]
+tests/test_llm.py::test_with_retries_backoff_schedule PASSED             [ 58%]
+tests/test_llm.py::test_create_llm_factory PASSED                        [ 59%]
+tests/test_multi_query.py::test_mine_acronyms_both_directions_and_hyphens PASSED [ 59%]
+tests/test_multi_query.py::test_mine_acronyms_prefers_most_frequent_definition PASSED [ 60%]
+tests/test_multi_query.py::test_rewriter_expands_acronyms_and_long_forms PASSED [ 60%]
+tests/test_multi_query.py::test_variants_are_distinct_ordered_and_capped PASSED [ 61%]
+tests/test_multi_query.py::test_multi_query_fuses_variant_rankings PASSED [ 61%]
+tests/test_multi_query.py::test_multi_query_over_real_hybrid_retriever PASSED [ 62%]
+tests/test_observability.py::test_metrics_render_prometheus_text PASSED  [ 62%]
+tests/test_observability.py::test_json_formatter_includes_extras PASSED  [ 63%]
+tests/test_observability.py::test_configure_logging_is_idempotent PASSED [ 63%]
+tests/test_observability.py::test_query_log_round_trip_and_limit PASSED  [ 64%]
+tests/test_observability.py::test_query_log_redacts_pii_before_storing PASSED [ 64%]
+tests/test_observability.py::test_query_log_disabled_and_missing PASSED  [ 65%]
+tests/test_observability.py::test_summarize_hand_computed PASSED         [ 65%]
+tests/test_observability.py::test_summarize_groups_questions_case_insensitively PASSED [ 66%]
+tests/test_pipeline.py::test_answer_has_resolved_citations_and_timings PASSED [ 67%]
+tests/test_pipeline.py::test_refuses_off_topic_question_without_calling_llm PASSED [ 67%]
+tests/test_pipeline.py::test_refuses_when_best_score_below_threshold PASSED [ 68%]
+tests/test_pipeline.py::test_refuses_on_empty_index PASSED               [ 68%]
+tests/test_pipeline.py::test_model_refusal_is_detected PASSED            [ 69%]
+tests/test_pipeline.py::test_prompt_contains_numbered_context_and_question PASSED [ 69%]
+tests/test_pipeline.py::test_reranker_is_applied_and_timed PASSED        [ 70%]
+tests/test_pipeline.py::test_extract_citations_ignores_out_of_range_and_duplicates PASSED [ 70%]
+tests/test_pipeline.py::test_build_prompt_and_is_refusal_helpers PASSED  [ 71%]
+tests/test_pipeline.py::test_validation_errors PASSED                    [ 71%]
+tests/test_pipeline.py::test_citations_carry_exact_evidence_span PASSED  [ 72%]
+tests/test_pipeline.py::test_unsupported_citation_is_flagged PASSED      [ 72%]
+tests/test_pipeline.py::test_claims_by_citation_and_find_evidence PASSED [ 73%]
+tests/test_pipeline.py::test_normalize_citations[A [1, 2].-A [1][2].] PASSED [ 73%]
+tests/test_pipeline.py::test_normalize_citations[B [1-3].-B [1][2][3].] PASSED [ 74%]
+tests/test_pipeline.py::test_normalize_citations[C [Source 2] and [passage 1; 3].-C [2] and [1][3].] PASSED [ 75%]
+tests/test_pipeline.py::test_normalize_citations[D [1 and 2].-D [1][2].] PASSED [ 75%]
+tests/test_pipeline.py::test_normalize_citations[Years [2019-2025] stay.-Years [2019-2025] stay.] PASSED [ 76%]
+tests/test_pipeline.py::test_normalize_citations[Big [1-90] stays.-Big [1-90] stays.] PASSED [ 76%]
+tests/test_pipeline.py::test_is_refusal_handles_paraphrased_refusals[I don't know based on the provided documents.-True] PASSED [ 77%]
+tests/test_pipeline.py::test_is_refusal_handles_paraphrased_refusals[The documents do not mention the capital of Australia.-True] PASSED [ 77%]
+tests/test_pipeline.py::test_is_refusal_handles_paraphrased_refusals[I cannot answer that from the given context.-True] PASSED [ 78%]
+tests/test_pipeline.py::test_is_refusal_handles_paraphrased_refusals[There is no information about this in the passages.-True] PASSED [ 78%]
+tests/test_pipeline.py::test_is_refusal_handles_paraphrased_refusals[BM25 uses k1 [1]. The documents do not mention b.-False] PASSED [ 79%]
+tests/test_pipeline.py::test_is_refusal_handles_paraphrased_refusals[Paris is the capital of France.-False] PASSED [ 79%]
+tests/test_pipeline.py::test_real_llm_style_output_is_normalized PASSED  [ 80%]
+tests/test_pipeline.py::test_pipeline_reports_gate PASSED                [ 80%]
+tests/test_privacy.py::test_redacts_personal_data[Mail jan.k@example.co.uk now-Mail [EMAIL] now] PASSED [ 81%]
+tests/test_privacy.py::test_redacts_personal_data[IBAN DE89 3704 0044 0532 0130 00 please-IBAN [IBAN] please] PASSED [ 81%]
+tests/test_privacy.py::test_redacts_personal_data[IBAN DE89370400440532013000.-IBAN [IBAN].] PASSED [ 82%]
+tests/test_privacy.py::test_redacts_personal_data[Card 4111 1111 1111 1111 declined-Card [CARD] declined] PASSED [ 82%]
+tests/test_privacy.py::test_redacts_personal_data[Call +49 30 1234567 or 030 1234567-Call [PHONE] or [PHONE]] PASSED [ 83%]
+tests/test_privacy.py::test_leaves_ordinary_banking_text_alone[What is the CET1 ratio in 2024?] PASSED [ 84%]
+tests/test_privacy.py::test_leaves_ordinary_banking_text_alone[Deposits are covered up to 100,000 euros.] PASSED [ 84%]
+tests/test_privacy.py::test_leaves_ordinary_banking_text_alone[Is the 2019-2025 period covered?] PASSED [ 85%]
+tests/test_privacy.py::test_leaves_ordinary_banking_text_alone[What does a pacs.008 message represent?] PASSED [ 85%]
+tests/test_privacy.py::test_leaves_ordinary_banking_text_alone[Card 1234 5678 9012 3456 fails the Luhn check] PASSED [ 86%]
+tests/test_retrieval.py::test_reciprocal_rank_fusion_hand_computed_example PASSED [ 86%]
+tests/test_retrieval.py::test_rrf_handles_disjoint_lists_and_empty_input PASSED [ 87%]
+tests/test_retrieval.py::test_bm25_ranks_exact_term_first PASSED         [ 87%]
+tests/test_retrieval.py::test_bm25_serialization_round_trip PASSED       [ 88%]
+tests/test_retrieval.py::test_dense_retrieval_prefers_overlapping_text PASSED [ 88%]
+tests/test_retrieval.py::test_retrieval_determinism PASSED               [ 89%]
+tests/test_retrieval.py::test_index_save_load_round_trip PASSED          [ 89%]
+tests/test_retrieval.py::test_index_load_reembeds_on_embedder_mismatch PASSED [ 90%]
+tests/test_retrieval.py::test_index_load_missing_metadata PASSED         [ 90%]
+tests/test_retrieval.py::test_attach_index_validates_shape PASSED        [ 91%]
 tests/test_retrieval.py::test_empty_index_retrieval PASSED               [ 92%]
-tests/test_retrieval.py::test_k_larger_than_corpus PASSED                [ 96%]
-tests/test_retrieval.py::test_cross_encoder_reranker_fallback PASSED     [100%]
+tests/test_retrieval.py::test_k_larger_than_corpus PASSED                [ 92%]
+tests/test_retrieval.py::test_cross_encoder_reranker_fallback PASSED     [ 93%]
+tests/test_retrieval.py::test_cross_encoder_reranker_raises_without_fallback PASSED [ 93%]
+tests/test_retrieval.py::test_cross_encoder_reranker_reorders_with_model PASSED [ 94%]
+tests/test_textutil.py::test_content_tokens_drop_stopwords_keep_short_alphanumerics PASSED [ 94%]
+tests/test_textutil.py::test_stem_conflates_inflections[parallelize-parallelized] PASSED [ 95%]
+tests/test_textutil.py::test_stem_conflates_inflections[rate-rates] PASSED [ 95%]
+tests/test_textutil.py::test_stem_conflates_inflections[regularization-regularize] PASSED [ 96%]
+tests/test_textutil.py::test_stem_conflates_inflections[networks-network] PASSED [ 96%]
+tests/test_textutil.py::test_stem_keeps_short_words_and_double_s PASSED  [ 97%]
+tests/test_textutil.py::test_strip_markdown_removes_math_and_markup PASSED [ 97%]
+tests/test_textutil.py::test_split_sentences_respects_lines_and_punctuation PASSED [ 98%]
+tests/test_textutil.py::test_query_coverage PASSED                       [ 98%]
+tests/test_textutil.py::test_single_letters_and_subscripts_are_content PASSED [ 99%]
+tests/test_textutil.py::test_sentence_spans_offsets_point_into_original_text PASSED [100%]
 
 ================================ tests coverage ================================
-_______________ coverage: platform linux, python 3.12.13-final-0 _______________
+_______________ coverage: platform linux, python 3.11.18-final-0 _______________
 
 Name                                        Stmts   Miss  Cover   Missing
 -------------------------------------------------------------------------
 src/raglens/__init__.py                         1      0   100%
 src/raglens/api/__init__.py                     0      0   100%
+src/raglens/api/main.py                       191      8    96%   130-132, 237, 253-254, 319-320
 src/raglens/chunking/__init__.py                2      0   100%
-src/raglens/chunking/splitter.py              168     30    82%   12, 16, 38, 66-69, 87, 98, 102-108, 114, 144, 177, 181, 198, 219-223, 253-255, 258
+src/raglens/chunking/splitter.py              126      4    97%   13, 17, 152, 181
 src/raglens/cli/__init__.py                     0      0   100%
-src/raglens/config.py                          24      0   100%
+src/raglens/cli/main.py                        79      7    91%   51, 88, 113-114, 151-154
+src/raglens/config.py                          42      0   100%
 src/raglens/embed/__init__.py                   4      0   100%
-src/raglens/embed/base.py                      14      2    86%   16, 24
-src/raglens/embed/hash.py                      37      1    97%   47
-src/raglens/embed/sentence_transformer.py      43      8    81%   40-42, 58, 66-75
-src/raglens/eval/__init__.py                    0      0   100%
+src/raglens/embed/base.py                      15      1    93%   20
+src/raglens/embed/hash.py                      45      1    98%   70
+src/raglens/embed/sentence_transformer.py      51      0   100%
+src/raglens/engine.py                         146      0   100%
+src/raglens/eval/__init__.py                    4      0   100%
+src/raglens/eval/benchmark.py                 147      3    98%   125-126, 362
+src/raglens/eval/charts.py                     69      0   100%
+src/raglens/eval/dataset.py                    35      0   100%
+src/raglens/eval/metrics.py                    61      0   100%
+src/raglens/eval/runner.py                     95      0   100%
+src/raglens/eval/synthetic.py                  38      1    97%   64
+src/raglens/eval/train_gate.py                112      1    99%   237
 src/raglens/ingest/__init__.py                  3      0   100%
 src/raglens/ingest/models.py                   22      0   100%
-src/raglens/ingest/parser.py                   65      0   100%
-src/raglens/llm/__init__.py                     0      0   100%
-src/raglens/pipeline/__init__.py                0      0   100%
+src/raglens/ingest/parser.py                   55      0   100%
+src/raglens/llm/__init__.py                    16      0   100%
+src/raglens/llm/base.py                        42      0   100%
+src/raglens/llm/fake.py                        34      0   100%
+src/raglens/llm/ollama.py                      24      1    96%   47
+src/raglens/llm/openai_compat.py               23      1    96%   53
+src/raglens/observability.py                  127      2    98%   90, 237
+src/raglens/pipeline/__init__.py                2      0   100%
+src/raglens/pipeline/gate.py                   97      0   100%
+src/raglens/pipeline/rag.py                   165      0   100%
+src/raglens/privacy.py                         29      0   100%
 src/raglens/rerank/__init__.py                  2      0   100%
-src/raglens/rerank/cross_encoder.py            46     17    63%   18, 39, 45, 55, 60, 66-89
+src/raglens/rerank/cross_encoder.py            48      0   100%
 src/raglens/retrieve/__init__.py                6      0   100%
-src/raglens/retrieve/base.py                   14      1    93%   27
-src/raglens/retrieve/bm25.py                   41      5    88%   41, 50, 71, 80-81
-src/raglens/retrieve/dense.py                  39      4    90%   27-28, 52, 66
-src/raglens/retrieve/hybrid.py                 51      1    98%   19
-src/raglens/retrieve/store.py                  32      1    97%   48
+src/raglens/retrieve/base.py                   13      0   100%
+src/raglens/retrieve/bm25.py                   36      0   100%
+src/raglens/retrieve/dense.py                  42      1    98%   60
+src/raglens/retrieve/hybrid.py                 50      0   100%
+src/raglens/retrieve/multi_query.py            88      1    99%   59
+src/raglens/retrieve/store.py                  46      2    96%   77-78
+src/raglens/textutil.py                        76      1    99%   130
 -------------------------------------------------------------------------
-TOTAL                                         614     70    89%
-Required test coverage of 85.0% reached. Total coverage: 88.60%
-============================= 27 passed in 42.53s ==============================
+TOTAL                                        2309     35    98%
+Required test coverage of 85.0% reached. Total coverage: 98.48%
+============================= 188 passed in 15.91s =============================
