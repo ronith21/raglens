@@ -1,0 +1,30 @@
+$ raglens ingest --rebuild
+Added 20 documents (133 chunks), skipped 0. Index: 20 documents, 133 chunks -> data/index
+
+$ raglens ask "How does reciprocal rank fusion combine rankings?"
+Reciprocal Rank Fusion (Cormack et al., 2009) solves score normalization by operating solely on rank positions rather than arbitrary raw score magnitudes [1]. Hybrid retrieval combines the orthogonal strengths of lexical search (BM25) and dense semantic vector search (FAISS) to achieve superior retrieval accuracy [2].
+  [1] Hybrid Retrieval and Reciprocal Rank Fusion (data/sample_corpus/12_hybrid_retrieval_rrf.md)
+      evidence (supported 100%): Reciprocal Rank Fusion (Cormack et al., 2009) solves score normalization by operating solely on rank positions rather than arbitrary raw score magnitudes.
+  [2] Hybrid Retrieval and Reciprocal Rank Fusion (data/sample_corpus/12_hybrid_retrieval_rrf.md)
+      evidence (supported 100%): Hybrid retrieval combines the orthogonal strengths of lexical search (BM25) and dense semantic vector search (FAISS) to achieve superior retrieval accuracy.
+hybrid | fake | retrieve 8.9 ms, generate 0.9 ms
+
+$ raglens ask "What does DVC track?" --multi-query
+Traditional software version control tracks code changes via Git [1]. Tools like DVC (Data Version Control) track immutable datasets, feature stores, and trained model weights alongside code commits, ensuring deterministic experimental reproducibility [1].
+  [1] MLOps: Machine Learning Operations and System Lifecycle (data/sample_corpus/16_mlops_production_systems.md)
+      evidence (supported 100%): Traditional software version control tracks code changes via Git.
+hybrid+mq | fake | retrieve 10.3 ms, generate 0.7 ms
+
+$ raglens ask "What is the capital of Australia?"
+I don't know based on the provided documents.
+(refused: learned gate: 0% confidence the documents answer this (< 46% threshold))
+hybrid | fake | retrieve 7.9 ms, generate 0.0 ms
+
+$ CORPUS_DIR=data/corpora/banking INDEX_DIR=data/index_banking raglens ingest
+Added 14 documents (98 chunks), skipped 0. Index: 14 documents, 98 chunks -> data/index_banking
+
+$ CORPUS_DIR=data/corpora/banking INDEX_DIR=data/index_banking raglens ask "What was Deutsche Bank's CET1 ratio in 2024?"
+I don't know based on the provided documents.
+(refused: learned gate: 15% confidence the documents answer this (< 46% threshold))
+hybrid | fake | retrieve 7.8 ms, generate 0.0 ms
+

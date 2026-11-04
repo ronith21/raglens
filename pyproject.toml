@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "raglens"
-version = "0.1.0"
+version = "0.2.0"
 description = "Retrieval-Augmented Generation system with a built-in evaluation harness"
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
     { name = "RAGLens Contributors" }
 ]
@@ -19,21 +19,36 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "faiss-cpu>=1.8.0",
     "numpy>=1.24.0",
-    "sentence-transformers>=2.2.0",
     "typer>=0.9.0",
     "fastapi>=0.100.0",
     "uvicorn>=0.22.0",
+    "python-multipart>=0.0.9",
     "streamlit>=1.25.0",
     "httpx>=0.24.0",
+    "matplotlib>=3.7.0",
+    "pandas>=2.0.0",
+    "fastapi-offline>=1.7.0",
+    "prometheus-client>=0.20.0",
 ]
 
 [project.optional-dependencies]
+models = [
+    "sentence-transformers>=2.2.0",
+]
+screenshots = [
+    "playwright>=1.40.0",
+]
+train = [
+    "scikit-learn>=1.4.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
     "ruff>=0.4.0",
     "mypy>=1.10.0",
     "pre-commit>=3.5.0",
+    "pandas-stubs>=2.0.0",
+    "scikit-learn>=1.4.0",
 ]
 
 [project.scripts]
@@ -60,7 +75,7 @@ select = [
     "RUF", # ruff-specific rules
 ]
 ignore = [
-    "B008", # do not perform function calls in argument defaults
+    "B008", # do not perform function calls in argument defaults (Typer/FastAPI idiom)
 ]
 
 [tool.ruff.format]
@@ -83,9 +98,9 @@ warn_unused_ignores = true
 module = [
     "faiss.*",
     "rank_bm25.*",
-    "sentence_transformers.*",
     "pypdf.*",
     "streamlit.*",
+    "sklearn.*",
 ]
 ignore_missing_imports = true
 
@@ -93,6 +108,11 @@ ignore_missing_imports = true
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-v --strict-markers"
+filterwarnings = [
+    "error",
+    # Starlette's TestClient warns about its own httpx dependency; nothing to fix on our side.
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated",
+]
 
 [tool.coverage.run]
 source = ["src/raglens"]

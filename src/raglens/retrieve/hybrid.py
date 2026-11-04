@@ -26,33 +26,27 @@ def reciprocal_rank_fusion(
         for item in ranked_list:
             cid = item.chunk.chunk_id
             chunk_map[cid] = item.chunk
-            if cid not in rrf_scores:
-                rrf_scores[cid] = 0.0
-                diagnostic_map[cid] = {}
-
-            addition = 1.0 / (k + item.rank)
-            rrf_scores[cid] += addition
+            rrf_scores[cid] = rrf_scores.get(cid, 0.0) + 1.0 / (k + item.rank)
+            diag = diagnostic_map.setdefault(cid, {})
             retriever_name = item.retriever_name or "unknown"
-            diagnostic_map[cid][f"{retriever_name}_rank"] = item.rank
-            diagnostic_map[cid][f"{retriever_name}_score"] = item.score
+            diag[f"{retriever_name}_rank"] = item.rank
+            diag[f"{retriever_name}_score"] = item.score
 
-    sorted_items = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)
-    actual_k = min(top_k, len(sorted_items))
+    # Sort by fused score, breaking ties by chunk id so results are fully deterministic.
+    sorted_items = sorted(rrf_scores.items(), key=lambda x: (-x[1], x[0]))
     results: list[SearchResult] = []
-
-    for rank, (cid, score) in enumerate(sorted_items[:actual_k], start=1):
-        metadata = dict(diagnostic_map.get(cid, {}))
-        metadata["rrf_score"] = float(score)
+    for rank, (cid, score) in enumerate(sorted_items[: max(top_k, 0)], start=1):
+        metadata = dict(diagnostic_map[cid])
+        metadata["rrf_score"] = score
         results.append(
             SearchResult(
                 chunk=chunk_map[cid],
-                score=float(score),
+                score=score,
                 rank=rank,
                 retriever_name="hybrid",
                 metadata=metadata,
             )
         )
-
     return results
 
 
@@ -74,6 +68,11 @@ class HybridRetriever(BaseRetriever):
         if chunks:
             self.index_chunks(chunks)
 
+    @property
+    def embedder(self) -> BaseEmbedder:
+        """Embedder used by the dense side."""
+        return self.dense_retriever.embedder
+
     def index_chunks(self, chunks: list[Chunk]) -> None:
         """Index chunks across both BM25 and Dense engines."""
         self.chunks = list(chunks)
@@ -88,7 +87,6 @@ class HybridRetriever(BaseRetriever):
         candidate_pool_size = max(top_k * 2, 20)
         bm25_results = self.bm25_retriever.retrieve(query, top_k=candidate_pool_size)
         dense_results = self.dense_retriever.retrieve(query, top_k=candidate_pool_size)
-
         return reciprocal_rank_fusion(
             ranked_lists=[bm25_results, dense_results],
             k=self.rrf_k,

@@ -1,0 +1,24 @@
+python3 -m raglens.eval.benchmark --corpus data/corpora/banking \
+	--dataset data/eval/banking_test.jsonl --out docs/proof/banking
+Failed to load CrossEncoder cross-encoder/ms-marco-MiniLM-L-6-v2: No module named 'sentence_transformers'. Using pass-through fallback.
+Failed to load SentenceTransformer all-MiniLM-L6-v2: No module named 'sentence_transformers'. Falling back to HashEmbedder.
+wrote docs/proof/banking/eval_report.md
+wrote docs/proof/banking/eval_results.json
+wrote docs/proof/banking/retrieval_metrics_512.png
+wrote docs/proof/banking/answer_metrics_512.png
+wrote docs/proof/banking/mrr_heatmap.png
+bm25@256             hit@5=0.958 mrr=0.872 ndcg@5=0.888 refusal_acc=0.875
+dense@256            hit@5=0.917 mrr=0.867 ndcg@5=0.875 refusal_acc=1.000
+hybrid@256           hit@5=1.000 mrr=0.903 ndcg@5=0.928 refusal_acc=0.875
+hybrid+mq@256        hit@5=0.958 mrr=0.909 ndcg@5=0.917 refusal_acc=1.000
+hybrid+rerank@256    hit@5=1.000 mrr=0.903 ndcg@5=0.928 refusal_acc=0.875
+bm25@512             hit@5=0.958 mrr=0.944 ndcg@5=0.943 refusal_acc=0.875
+dense@512            hit@5=0.875 mrr=0.858 ndcg@5=0.851 refusal_acc=1.000
+hybrid@512           hit@5=1.000 mrr=0.896 ndcg@5=0.922 refusal_acc=0.875
+hybrid+mq@512        hit@5=1.000 mrr=0.910 ndcg@5=0.933 refusal_acc=0.875
+hybrid+rerank@512    hit@5=1.000 mrr=0.896 ndcg@5=0.922 refusal_acc=1.000
+bm25@1024            hit@5=0.958 mrr=0.943 ndcg@5=0.943 refusal_acc=0.750
+dense@1024           hit@5=0.958 mrr=0.787 ndcg@5=0.830 refusal_acc=1.000
+hybrid@1024          hit@5=0.958 mrr=0.914 ndcg@5=0.922 refusal_acc=1.000
+hybrid+mq@1024       hit@5=0.958 mrr=0.900 ndcg@5=0.912 refusal_acc=1.000
+hybrid+rerank@1024   hit@5=0.958 mrr=0.914 ndcg@5=0.922 refusal_acc=1.000

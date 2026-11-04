@@ -1,0 +1,35 @@
+{
+  "feature_names": [
+    "coverage_top3",
+    "best_sentence_coverage",
+    "missing_specific_terms",
+    "semantic_similarity"
+  ],
+  "means": [
+    0.7782790309106101,
+    0.5946532999164579,
+    0.12543859649122807,
+    0.3842550743567316
+  ],
+  "scales": [
+    0.2759917231702031,
+    0.28657341384898255,
+    0.31224373918840637,
+    0.14922576253668202
+  ],
+  "weights": [
+    1.0394662561603625,
+    0.3076652912664822,
+    -1.7465075244605441,
+    0.6386382766741887
+  ],
+  "bias": 1.7418401586660328,
+  "threshold": 0.46,
+  "trained_on": {
+    "answerable": 79,
+    "unanswerable": 16
+  },
+  "embedder": "hash-384 (fallback)",
+  "cost_false_answer": 3.0,
+  "cost_false_refusal": 1.0
+}

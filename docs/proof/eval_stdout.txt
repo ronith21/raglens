@@ -1,0 +1,23 @@
+python3 -m raglens.eval.benchmark
+Failed to load CrossEncoder cross-encoder/ms-marco-MiniLM-L-6-v2: No module named 'sentence_transformers'. Using pass-through fallback.
+Failed to load SentenceTransformer all-MiniLM-L6-v2: No module named 'sentence_transformers'. Falling back to HashEmbedder.
+wrote docs/proof/eval_report.md
+wrote docs/proof/eval_results.json
+wrote docs/proof/retrieval_metrics_512.png
+wrote docs/proof/answer_metrics_512.png
+wrote docs/proof/mrr_heatmap.png
+bm25@256             hit@5=1.000 mrr=0.979 ndcg@5=0.982 refusal_acc=1.000
+dense@256            hit@5=1.000 mrr=0.973 ndcg@5=0.973 refusal_acc=1.000
+hybrid@256           hit@5=1.000 mrr=1.000 ndcg@5=0.997 refusal_acc=1.000
+hybrid+mq@256        hit@5=1.000 mrr=1.000 ndcg@5=0.999 refusal_acc=1.000
+hybrid+rerank@256    hit@5=1.000 mrr=1.000 ndcg@5=0.998 refusal_acc=1.000
+bm25@512             hit@5=1.000 mrr=0.973 ndcg@5=0.978 refusal_acc=1.000
+dense@512            hit@5=1.000 mrr=0.973 ndcg@5=0.973 refusal_acc=1.000
+hybrid@512           hit@5=1.000 mrr=0.979 ndcg@5=0.977 refusal_acc=1.000
+hybrid+mq@512        hit@5=1.000 mrr=0.991 ndcg@5=0.991 refusal_acc=1.000
+hybrid+rerank@512    hit@5=1.000 mrr=0.979 ndcg@5=0.977 refusal_acc=1.000
+bm25@1024            hit@5=1.000 mrr=0.991 ndcg@5=0.992 refusal_acc=1.000
+dense@1024           hit@5=1.000 mrr=0.952 ndcg@5=0.957 refusal_acc=1.000
+hybrid@1024          hit@5=1.000 mrr=0.982 ndcg@5=0.984 refusal_acc=1.000
+hybrid+mq@1024       hit@5=1.000 mrr=0.982 ndcg@5=0.985 refusal_acc=1.000
+hybrid+rerank@1024   hit@5=1.000 mrr=0.982 ndcg@5=0.984 refusal_acc=1.000

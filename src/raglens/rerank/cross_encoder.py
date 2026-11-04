@@ -1,5 +1,6 @@
 """Cross-encoder reranking module with lazy loading and fallback."""
 
+import importlib
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
@@ -15,11 +16,14 @@ class BaseReranker(ABC):
     @abstractmethod
     def rerank(self, query: str, results: list[SearchResult], top_k: int = 5) -> list[SearchResult]:
         """Rerank a list of SearchResults for a query."""
-        pass
 
 
 class CrossEncoderReranker(BaseReranker):
-    """Lazy-loaded cross-encoder reranker using sentence-transformers CrossEncoder."""
+    """Lazy-loaded cross-encoder reranker using sentence-transformers CrossEncoder.
+
+    With ``fallback_pass_through=True`` a missing package or failed model download degrades to
+    returning the first-stage ranking unchanged (truncated to ``top_k``).
+    """
 
     def __init__(
         self,
@@ -33,26 +37,29 @@ class CrossEncoderReranker(BaseReranker):
         self._model: Any = None
         self._load_failed: bool = False
 
+    @property
+    def available(self) -> bool:
+        """True when the real cross-encoder model is loaded."""
+        self._load_model()
+        return self._model is not None
+
     def _load_model(self) -> None:
         """Lazily load cross-encoder model."""
         if self._model is not None or self._load_failed:
             return
-
         try:
-            from sentence_transformers import CrossEncoder
-
-            self._model = CrossEncoder(self.model_name, device=self.device)
+            module = importlib.import_module("sentence_transformers")
+            self._model = module.CrossEncoder(self.model_name, device=self.device)
             logger.info("Loaded CrossEncoder %s", self.model_name)
-        except Exception as e:
-            if self.fallback_pass_through:
-                logger.warning(
-                    "Failed to load CrossEncoder %s: %s. Using pass-through fallback.",
-                    self.model_name,
-                    e,
-                )
-                self._load_failed = True
-            else:
-                raise e
+        except Exception as exc:
+            if not self.fallback_pass_through:
+                raise
+            logger.warning(
+                "Failed to load CrossEncoder %s: %s. Using pass-through fallback.",
+                self.model_name,
+                exc,
+            )
+            self._load_failed = True
 
     def rerank(self, query: str, results: list[SearchResult], top_k: int = 5) -> list[SearchResult]:
         """Rerank input results using the cross-encoder."""
@@ -60,30 +67,29 @@ class CrossEncoderReranker(BaseReranker):
             return []
 
         self._load_model()
-        if self._load_failed or self._model is None:
-            return results[: min(top_k, len(results))]
+        if self._model is None:
+            return results[:top_k]
 
-        pairs = [[query, r.chunk.text] for r in results]
-        scores = self._model.predict(pairs)
+        scores = self._model.predict([[query, r.chunk.text] for r in results])
+        scored_pairs = sorted(
+            zip(results, (float(s) for s in scores), strict=True),
+            key=lambda x: x[1],
+            reverse=True,
+        )
 
-        scored_pairs = list(zip(results, scores, strict=False))
-        scored_pairs.sort(key=lambda x: float(x[1]), reverse=True)
-
-        reranked_results: list[SearchResult] = []
-        for rank, (orig_res, score) in enumerate(scored_pairs[:top_k], start=1):
-            metadata = dict(orig_res.metadata)
-            metadata["pre_rerank_rank"] = orig_res.rank
-            metadata["pre_rerank_score"] = orig_res.score
-            metadata["cross_encoder_score"] = float(score)
-
-            reranked_results.append(
+        reranked: list[SearchResult] = []
+        for rank, (orig, score) in enumerate(scored_pairs[:top_k], start=1):
+            metadata = dict(orig.metadata)
+            metadata["pre_rerank_rank"] = orig.rank
+            metadata["pre_rerank_score"] = orig.score
+            metadata["cross_encoder_score"] = score
+            reranked.append(
                 SearchResult(
-                    chunk=orig_res.chunk,
-                    score=float(score),
+                    chunk=orig.chunk,
+                    score=score,
                     rank=rank,
-                    retriever_name=orig_res.retriever_name,
+                    retriever_name=orig.retriever_name,
                     metadata=metadata,
                 )
             )
-
-        return reranked_results
+        return reranked

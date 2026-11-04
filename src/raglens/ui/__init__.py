@@ -1,1 +1,1 @@
-"""Empty package."""
+"""Streamlit user interface (run ``make ui``)."""

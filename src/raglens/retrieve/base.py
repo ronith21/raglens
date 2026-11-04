@@ -24,4 +24,3 @@ class BaseRetriever(ABC):
     @abstractmethod
     def retrieve(self, query: str, top_k: int = 5) -> list[SearchResult]:
         """Retrieve the top-k most relevant SearchResult items for a query."""
-        pass
