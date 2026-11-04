@@ -10,5 +10,6 @@ repos:
     rev: v1.10.0
     hooks:
       - id: mypy
-        additional_dependencies: [pydantic, pydantic-settings]
+        additional_dependencies: [pydantic, pydantic-settings, fastapi, typer, httpx, numpy]
         args: [--config-file=pyproject.toml]
+        files: ^src/
