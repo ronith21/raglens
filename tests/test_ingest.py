@@ -80,8 +80,7 @@ def test_unicode_handling(tmp_path: Path) -> None:
 
 def test_pdf_page_tracking(tmp_path: Path) -> None:
     """PDF parsing should accurately track individual pages and character offsets."""
-    pdf_path = create_sample_pdf(tmp_path)
-    doc = ingest_file(pdf_path)
+    doc = ingest_file(create_sample_pdf(tmp_path))
 
     assert isinstance(doc, Document)
     assert len(doc.pages) == 2
@@ -91,6 +90,7 @@ def test_pdf_page_tracking(tmp_path: Path) -> None:
     assert "Page 2" in doc.pages[1].text
     assert doc.pages[1].start_char == doc.pages[0].end_char
     assert doc.text == doc.pages[0].text + doc.pages[1].text
+    assert doc.metadata["total_pages"] == 2
 
 
 def test_unsupported_file_format(tmp_path: Path) -> None:
@@ -114,11 +114,24 @@ def test_ingest_directory(tmp_path: Path) -> None:
     assert any(d.text == "Hello text" for d in docs)
 
 
+def test_ingest_missing_directory(tmp_path: Path) -> None:
+    """A missing corpus directory is a clear error, not an empty result."""
+    with pytest.raises(FileNotFoundError, match="Corpus directory not found"):
+        ingest_directory(tmp_path / "nope")
+
+
 def test_deterministic_doc_id(tmp_path: Path) -> None:
     """Same path and content produces identical doc_id."""
     p = tmp_path / "stable.txt"
     p.write_text("deterministic content", encoding="utf-8")
+    assert compute_doc_id(p, p.read_bytes()) == compute_doc_id(p, p.read_bytes())
 
-    id1 = compute_doc_id(p, p.read_bytes())
-    id2 = compute_doc_id(p, p.read_bytes())
-    assert id1 == id2
+
+def test_doc_id_is_location_independent(tmp_path: Path) -> None:
+    """The same file in two folders gets the same id; different content gets a different one."""
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    assert compute_doc_id(tmp_path / "a" / "x.md", b"same") == compute_doc_id(
+        tmp_path / "b" / "x.md", b"same"
+    )
+    assert compute_doc_id("x.md", b"one") != compute_doc_id("x.md", b"two")
