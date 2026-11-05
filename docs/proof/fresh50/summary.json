@@ -1,0 +1,94 @@
+{
+  "bm25": {
+    "score": 35,
+    "correct_answerable": 30,
+    "correct_refusals": 5,
+    "answered": 43,
+    "answered_unanswerable": 5,
+    "refused_answerable": 2,
+    "answer_precision": 0.698,
+    "answer_recall": 0.75,
+    "refusal_precision": 0.714,
+    "refusal_recall": 0.5,
+    "citation_precision": 0.695,
+    "citation_recall": 0.911,
+    "retrieval_precision@5": 0.338,
+    "retrieval_recall@5": 1.0,
+    "by_kind": {
+      "direct": "21/25",
+      "paraphrase": "7/10",
+      "multi": "2/5",
+      "unanswerable": "5/10"
+    },
+    "answer_f1": 0.723
+  },
+  "dense": {
+    "score": 32,
+    "correct_answerable": 26,
+    "correct_refusals": 6,
+    "answered": 42,
+    "answered_unanswerable": 4,
+    "refused_answerable": 2,
+    "answer_precision": 0.619,
+    "answer_recall": 0.65,
+    "refusal_precision": 0.75,
+    "refusal_recall": 0.6,
+    "citation_precision": 0.741,
+    "citation_recall": 0.889,
+    "retrieval_precision@5": 0.357,
+    "retrieval_recall@5": 0.911,
+    "by_kind": {
+      "direct": "18/25",
+      "paraphrase": "6/10",
+      "multi": "2/5",
+      "unanswerable": "6/10"
+    },
+    "answer_f1": 0.634
+  },
+  "hybrid": {
+    "score": 35,
+    "correct_answerable": 29,
+    "correct_refusals": 6,
+    "answered": 42,
+    "answered_unanswerable": 4,
+    "refused_answerable": 2,
+    "answer_precision": 0.69,
+    "answer_recall": 0.725,
+    "refusal_precision": 0.75,
+    "refusal_recall": 0.6,
+    "citation_precision": 0.774,
+    "citation_recall": 0.911,
+    "retrieval_precision@5": 0.413,
+    "retrieval_recall@5": 1.0,
+    "by_kind": {
+      "direct": "20/25",
+      "paraphrase": "7/10",
+      "multi": "2/5",
+      "unanswerable": "6/10"
+    },
+    "answer_f1": 0.707
+  },
+  "hybrid+mq": {
+    "score": 37,
+    "correct_answerable": 31,
+    "correct_refusals": 6,
+    "answered": 44,
+    "answered_unanswerable": 4,
+    "refused_answerable": 0,
+    "answer_precision": 0.705,
+    "answer_recall": 0.775,
+    "refusal_precision": 1.0,
+    "refusal_recall": 0.6,
+    "citation_precision": 0.75,
+    "citation_recall": 0.933,
+    "retrieval_precision@5": 0.433,
+    "retrieval_recall@5": 1.0,
+    "by_kind": {
+      "direct": "21/25",
+      "paraphrase": "8/10",
+      "multi": "2/5",
+      "unanswerable": "6/10"
+    },
+    "answer_f1": 0.738
+  }
+}

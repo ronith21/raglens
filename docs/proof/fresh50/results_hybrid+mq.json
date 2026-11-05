@@ -1,0 +1,1175 @@
+[
+  {
+    "id": "f01",
+    "kind": "direct",
+    "question": "What is the minimum Tier 1 capital ratio?",
+    "reference": "6% of risk-weighted assets.",
+    "gold": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9941626213624476,
+    "answer": "The Pillar 1 minimums are a CET1 ratio of 4.5% of RWA, a Tier 1 ratio of 6% and a total capital ratio of 8% [1]. Because risk weights can be wrong, Basel III adds a simple backstop: the leverage ratio, defined as Tier 1 capital divided by total exposure (on- and off-balance-sheet exposures without risk weighting) [3].",
+    "cited": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "retrieved_top5": [
+      "01_basel_iii_capital_requirements",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "right_source": true,
+    "reference_recall": 0.0,
+    "correct": false
+  },
+  {
+    "id": "f02",
+    "kind": "direct",
+    "question": "What kind of instruments count as Additional Tier 1 capital?",
+    "reference": "Perpetual contingent convertible bonds that are written down or converted into equity when capital falls below a trigger.",
+    "gold": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.8947175521472421,
+    "answer": "Common Equity Tier 1 (CET1) is the highest-quality capital: ordinary shares and retained earnings, after deductions such as goodwill and certain deferred tax assets [1]. Additional Tier 1 (AT1) consists of instruments such as perpetual contingent convertible bonds that are written down or converted into equity when capital falls below a trigger [1].",
+    "cited": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "retrieved_top5": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f03",
+    "kind": "direct",
+    "question": "Within what range can national authorities set the countercyclical capital buffer?",
+    "reference": "Between 0% and 2.5%.",
+    "gold": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.963361694378159,
+    "answer": "the capital conservation buffer of 2.5%, which restricts dividends and bonuses when a bank dips into it; [1]. the countercyclical capital buffer, set by national authorities between 0% and 2.5% to build resilience when credit grows quickly; [1].",
+    "cited": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "retrieved_top5": [
+      "01_basel_iii_capital_requirements",
+      "04_aml_transaction_monitoring"
+    ],
+    "right_source": true,
+    "reference_recall": null,
+    "correct": false
+  },
+  {
+    "id": "f04",
+    "kind": "direct",
+    "question": "What haircuts apply to Level 2B liquid assets?",
+    "reference": "Haircuts of 25% to 50%.",
+    "gold": [
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9715154737619108,
+    "answer": "Level 2B assets, such as some equities and lower-rated corporate bonds, receive larger haircuts of 25% to 50% [1]. Level 2 assets are capped as a share of the total stock, so that the buffer is dominated by the most liquid instruments [2].",
+    "cited": [
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "retrieved_top5": [
+      "02_liquidity_lcr_and_nsfr",
+      "13_mifid_ii_investor_protection"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f05",
+    "kind": "direct",
+    "question": "Over what time horizon does the net stable funding ratio look at funding?",
+    "reference": "A one-year horizon.",
+    "gold": [
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9747451544653724,
+    "answer": "The ratio must also be at least 100% [2]. LCR = stock of HQLA / total net cash outflows over the next 30 calendar days [3].",
+    "cited": [
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "retrieved_top5": [
+      "02_liquidity_lcr_and_nsfr",
+      "01_basel_iii_capital_requirements"
+    ],
+    "right_source": true,
+    "reference_recall": 0.0,
+    "correct": false
+  },
+  {
+    "id": "f06",
+    "kind": "direct",
+    "question": "What is the ILAAP?",
+    "reference": "The Internal Liquidity Adequacy Assessment Process, through which banks run internal liquidity stress tests.",
+    "gold": [
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9149797368445249,
+    "answer": "Banks report their liquidity ratios to supervisors regularly and run internal liquidity stress tests through the Internal Liquidity Adequacy Assessment Process (ILAAP) [1].",
+    "cited": [
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "retrieved_top5": [
+      "02_liquidity_lcr_and_nsfr",
+      "04_aml_transaction_monitoring",
+      "11_market_risk_and_var"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f07",
+    "kind": "direct",
+    "question": "What does enhanced due diligence typically involve?",
+    "reference": "Establishing the source of wealth and source of funds and obtaining senior management approval.",
+    "gold": [
+      "03_kyc_customer_due_diligence"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.964835330525211,
+    "answer": "Enhanced due diligence (EDD) is required for higher-risk situations, including politically exposed persons (PEPs), customers linked to high-risk third countries identified by the European Commission, and complex or unusually large transactions [2]. EDD typically involves establishing the source of wealth and source of funds and obtaining senior management approval [2].",
+    "cited": [
+      "03_kyc_customer_due_diligence"
+    ],
+    "retrieved_top5": [
+      "03_kyc_customer_due_diligence",
+      "07_credit_risk_and_ifrs9"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f08",
+    "kind": "direct",
+    "question": "What can trigger an event-driven review of a customer file?",
+    "reference": "Changes such as a new address in a high-risk country or an alert from transaction monitoring.",
+    "gold": [
+      "03_kyc_customer_due_diligence"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9843030996878886,
+    "answer": "Customer files are refreshed on a schedule that depends on risk: high-risk customers may be reviewed every year, low-risk customers less often [1]. Event-driven reviews are triggered by changes such as a new address in a high-risk country or an alert from transaction monitoring [1].",
+    "cited": [
+      "03_kyc_customer_due_diligence"
+    ],
+    "retrieved_top5": [
+      "03_kyc_customer_due_diligence",
+      "04_aml_transaction_monitoring",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f09",
+    "kind": "direct",
+    "question": "What are the three stages of money laundering?",
+    "reference": "Placement, layering and integration.",
+    "gold": [
+      "04_aml_transaction_monitoring"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9830127224982907,
+    "answer": "Money laundering is usually described in three stages: placement (introducing criminal cash into the financial system), layering (moving funds through many transactions to hide their origin) and integration (using the funds in the legitimate economy) [2]. Transaction monitoring systems help banks detect activity that may belong to one of these stages [2].",
+    "cited": [
+      "04_aml_transaction_monitoring"
+    ],
+    "retrieved_top5": [
+      "07_credit_risk_and_ifrs9",
+      "04_aml_transaction_monitoring",
+      "03_kyc_customer_due_diligence"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f10",
+    "kind": "direct",
+    "question": "Where is the EU Anti-Money Laundering Authority based?",
+    "reference": "Frankfurt.",
+    "gold": [
+      "04_aml_transaction_monitoring"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9839862901853617,
+    "answer": "Each bank appoints an anti-money laundering officer with direct access to senior management [1]. The European Union has also created a dedicated Anti-Money Laundering Authority (AMLA), based in Frankfurt, to supervise the highest-risk institutions directly and to harmonise supervision across member states [1].",
+    "cited": [
+      "04_aml_transaction_monitoring"
+    ],
+    "retrieved_top5": [
+      "04_aml_transaction_monitoring",
+      "03_kyc_customer_due_diligence",
+      "06_gdpr_in_banking"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f11",
+    "kind": "direct",
+    "question": "When must sanctions screening of a payment take place?",
+    "reference": "Before the payment is executed.",
+    "gold": [
+      "04_aml_transaction_monitoring"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9546206547995347,
+    "answer": "Separately from transaction monitoring, banks screen customers and payments against sanctions lists, such as those of the European Union and the United Nations [1]. Screening must happen before a payment is executed, because processing a payment for a sanctioned party is prohibited regardless of intent [1].",
+    "cited": [
+      "04_aml_transaction_monitoring"
+    ],
+    "retrieved_top5": [
+      "04_aml_transaction_monitoring",
+      "14_sepa_payments_and_iso20022",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f12",
+    "kind": "direct",
+    "question": "Up to what amount are contactless payments at a point of sale exempt from strong customer authentication?",
+    "reference": "Up to 50 euros per transaction, with cumulative limits.",
+    "gold": [
+      "05_psd2_strong_customer_authentication"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9594679244880261,
+    "answer": "contactless payments at a point of sale up to 50 euros per transaction, with cumulative limits after which SCA is required again; [1]. The revised Payment Services Directive (PSD2) changed European retail payments in two ways: it opened bank accounts to licensed third-party providers, and it made strong customer authentication mandatory for most electronic payments [2].",
+    "cited": [
+      "05_psd2_strong_customer_authentication"
+    ],
+    "retrieved_top5": [
+      "05_psd2_strong_customer_authentication",
+      "09_card_fraud_detection"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f13",
+    "kind": "direct",
+    "question": "What do account information service providers do?",
+    "reference": "They aggregate data from a customer's accounts at different banks, for example in budgeting apps.",
+    "gold": [
+      "05_psd2_strong_customer_authentication"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9823524007949584,
+    "answer": "Account Information Service Providers (AISPs) aggregate data from a customer's accounts at different banks, for example in budgeting apps [1]. Payment Initiation Service Providers (PISPs) start a payment directly from the customer's bank account, for example at an online checkout, without using a card [1].",
+    "cited": [
+      "05_psd2_strong_customer_authentication"
+    ],
+    "retrieved_top5": [
+      "05_psd2_strong_customer_authentication",
+      "10_operational_risk_and_dora",
+      "13_mifid_ii_investor_protection"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f14",
+    "kind": "direct",
+    "question": "What does the data minimisation principle require?",
+    "reference": "Only data that is necessary for the purpose may be collected.",
+    "gold": [
+      "06_gdpr_in_banking"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9069095097146426,
+    "answer": "Purpose limitation: data collected for one purpose may not be reused for an incompatible purpose [1]. Data minimisation: only data that is necessary for the purpose may be collected [1].",
+    "cited": [
+      "06_gdpr_in_banking"
+    ],
+    "retrieved_top5": [
+      "06_gdpr_in_banking",
+      "04_aml_transaction_monitoring"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f15",
+    "kind": "direct",
+    "question": "When must a bank carry out a data protection impact assessment?",
+    "reference": "Before high-risk processing, such as a new credit scoring model or large-scale profiling.",
+    "gold": [
+      "06_gdpr_in_banking"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9943575624397978,
+    "answer": "Before high-risk processing, for example a new credit scoring model or large-scale profiling, the bank must carry out a data protection impact assessment (DPIA) describing the processing, its necessity, the risks to individuals and the measures to mitigate them [1]. Banks appoint a data protection officer who advises on compliance, monitors processing and acts as the contact point for the supervisory authority [2].",
+    "cited": [
+      "06_gdpr_in_banking"
+    ],
+    "retrieved_top5": [
+      "06_gdpr_in_banking",
+      "13_mifid_ii_investor_protection"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f16",
+    "kind": "direct",
+    "question": "What does Loss Given Default measure?",
+    "reference": "The share of the exposure that is lost if default occurs, after recoveries.",
+    "gold": [
+      "07_credit_risk_and_ifrs9"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9839475898019656,
+    "answer": "Loss Given Default (LGD): the share of the exposure that is lost if default occurs, after recoveries from collateral and workout [1]. Model quality is usually measured with the area under the ROC curve (AUC) or the closely related Gini coefficient, where Gini = 2 \u00d7 AUC - 1 [2].",
+    "cited": [
+      "07_credit_risk_and_ifrs9",
+      "08_credit_scoring_models"
+    ],
+    "retrieved_top5": [
+      "07_credit_risk_and_ifrs9",
+      "08_credit_scoring_models",
+      "11_market_risk_and_var"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f17",
+    "kind": "direct",
+    "question": "After how many days past due is default presumed under IFRS 9?",
+    "reference": "When payments are more than 90 days past due.",
+    "gold": [
+      "07_credit_risk_and_ifrs9"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9733866507077754,
+    "answer": "There is a rebuttable presumption that credit risk has increased significantly when payments are more than 30 days past due, and that default has occurred when payments are more than 90 days past due [1]. Historical simulation revalues the current portfolio under price changes observed in the past, for example the last 250 or 500 trading days, and reads the loss at the chosen percentile [3].",
+    "cited": [
+      "07_credit_risk_and_ifrs9",
+      "11_market_risk_and_var"
+    ],
+    "retrieved_top5": [
+      "07_credit_risk_and_ifrs9",
+      "11_market_risk_and_var"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f18",
+    "kind": "direct",
+    "question": "What does the Information Value of a scorecard variable summarise?",
+    "reference": "How well the variable's bins separate good from bad borrowers; it is used to select variables.",
+    "gold": [
+      "08_credit_scoring_models"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9776975483542056,
+    "answer": "The Information Value (IV) of a variable summarises how well its bins separate good from bad borrowers and is used to select variables [1]. The traditional retail scorecard is a logistic regression model [3].",
+    "cited": [
+      "08_credit_scoring_models"
+    ],
+    "retrieved_top5": [
+      "08_credit_scoring_models",
+      "11_market_risk_and_var",
+      "10_operational_risk_and_dora",
+      "06_gdpr_in_banking"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f19",
+    "kind": "direct",
+    "question": "What is reject inference?",
+    "reference": "Techniques that correct the selection bias of training only on approved applicants, for example by assigning inferred outcomes to rejected applications.",
+    "gold": [
+      "08_credit_scoring_models"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9896088255730895,
+    "answer": "A model is trained only on applicants who were approved, because the bank never observes whether rejected applicants would have repaid [1]. Reject inference techniques try to correct this selection bias, for example by assigning inferred outcomes to rejected applications [1].",
+    "cited": [
+      "08_credit_scoring_models"
+    ],
+    "retrieved_top5": [
+      "08_credit_scoring_models",
+      "02_liquidity_lcr_and_nsfr",
+      "04_aml_transaction_monitoring",
+      "01_basel_iii_capital_requirements"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f20",
+    "kind": "direct",
+    "question": "What is account takeover fraud?",
+    "reference": "A fraudster gains control of the customer's account, for example through phishing, and changes contact details before spending.",
+    "gold": [
+      "09_card_fraud_detection"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9588399514383265,
+    "answer": "Card-not-present fraud: stolen card details used online or by phone [1]. Account takeover: a fraudster gains control of the customer's account, for example through phishing, and changes contact details before spending [1].",
+    "cited": [
+      "09_card_fraud_detection"
+    ],
+    "retrieved_top5": [
+      "09_card_fraud_detection",
+      "14_sepa_payments_and_iso20022"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f21",
+    "kind": "direct",
+    "question": "What are the main pillars of the Digital Operational Resilience Act?",
+    "reference": "ICT risk management, ICT incident management and reporting, digital operational resilience testing, ICT third-party risk and information sharing.",
+    "gold": [
+      "10_operational_risk_and_dora"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.979741510886004,
+    "answer": "The Digital Operational Resilience Act (DORA) is an EU regulation that has applied since 17 January 2025 [1]. Banks identify and assess operational risks through risk and control self-assessments, collect internal loss data, track key risk indicators and run scenario analysis for rare but severe events [2].",
+    "cited": [
+      "10_operational_risk_and_dora"
+    ],
+    "retrieved_top5": [
+      "10_operational_risk_and_dora",
+      "03_kyc_customer_due_diligence"
+    ],
+    "right_source": true,
+    "reference_recall": 0.3333333333333333,
+    "correct": false
+  },
+  {
+    "id": "f22",
+    "kind": "direct",
+    "question": "How does historical simulation calculate Value at Risk?",
+    "reference": "It revalues the current portfolio under past price changes, for example over the last 250 or 500 trading days, and reads the loss at the chosen percentile.",
+    "gold": [
+      "11_market_risk_and_var"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9531383271093514,
+    "answer": "Value at Risk (VaR) estimates the loss that will not be exceeded with a given confidence level over a given horizon [1]. Historical simulation revalues the current portfolio under price changes observed in the past, for example the last 250 or 500 trading days, and reads the loss at the chosen percentile [3].",
+    "cited": [
+      "11_market_risk_and_var"
+    ],
+    "retrieved_top5": [
+      "11_market_risk_and_var",
+      "01_basel_iii_capital_requirements",
+      "10_operational_risk_and_dora"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f23",
+    "kind": "direct",
+    "question": "What is a bridge institution in bank resolution?",
+    "reference": "A temporary bank controlled by the resolution authority to which critical functions are transferred.",
+    "gold": [
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9808502862376154,
+    "answer": "In the banking union, resolution of significant banks is handled by the Single Resolution Board, supported by the Single Resolution Fund financed by the banking industry [2]. Bridge institution: transferring critical functions to a temporary bank controlled by the authority [3].",
+    "cited": [
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "retrieved_top5": [
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f24",
+    "kind": "direct",
+    "question": "Into which categories are clients divided under MiFID II?",
+    "reference": "Retail clients, professional clients and eligible counterparties.",
+    "gold": [
+      "13_mifid_ii_investor_protection"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.972472567543598,
+    "answer": "The Markets in Financial Instruments Directive (MiFID II) and its accompanying regulation set the rules for investment services in the European Union [1]. Clients are categorised as retail clients, professional clients or eligible counterparties [2].",
+    "cited": [
+      "13_mifid_ii_investor_protection"
+    ],
+    "retrieved_top5": [
+      "13_mifid_ii_investor_protection",
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f25",
+    "kind": "direct",
+    "question": "What is a pain.001 message?",
+    "reference": "A customer's credit transfer initiation sent to its bank.",
+    "gold": [
+      "14_sepa_payments_and_iso20022"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9480464038689953,
+    "answer": "ISO 20022 is an international standard for financial messages based on structured XML [1]. pain.001: a customer's credit transfer initiation sent to its bank; [1].",
+    "cited": [
+      "14_sepa_payments_and_iso20022"
+    ],
+    "retrieved_top5": [
+      "14_sepa_payments_and_iso20022",
+      "04_aml_transaction_monitoring",
+      "03_kyc_customer_due_diligence"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f26",
+    "kind": "paraphrase",
+    "question": "I had two accounts with 70,000 euros each at a bank that collapsed. How much of it is protected?",
+    "reference": "100,000 euros in total, because the limit applies per depositor per bank, not per account.",
+    "gold": [
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9636532378273556,
+    "answer": "Deposits are protected up to 100,000 euros per depositor per bank [1]. The limit applies to the total of a depositor's eligible accounts at the same bank, not to each account separately, so a customer with two accounts of 70,000 euros each at one bank is covered for 100,000 euros in total [1].",
+    "cited": [
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "retrieved_top5": [
+      "12_deposit_guarantee_and_resolution",
+      "14_sepa_payments_and_iso20022",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f27",
+    "kind": "paraphrase",
+    "question": "How many characters long is a German account number in the international format?",
+    "reference": "A German IBAN has 22 characters.",
+    "gold": [
+      "14_sepa_payments_and_iso20022"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.8400705051035496,
+    "answer": "Accounts are identified by the International Bank Account Number (IBAN) [1]. A German IBAN has 22 characters [1].",
+    "cited": [
+      "14_sepa_payments_and_iso20022"
+    ],
+    "retrieved_top5": [
+      "14_sepa_payments_and_iso20022",
+      "09_card_fraud_detection",
+      "11_market_risk_and_var"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f28",
+    "kind": "paraphrase",
+    "question": "Why can't a criminal reuse the confirmation code from my banking app to send money to someone else?",
+    "reference": "Dynamic linking ties the authentication code to the specific amount and payee.",
+    "gold": [
+      "05_psd2_strong_customer_authentication"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.4617139156421746,
+    "answer": "Money laundering is usually described in three stages: placement (introducing criminal cash into the financial system), layering (moving funds through many transactions to hide their origin) and integration (using the funds in the legitimate economy) [1]. For remote electronic payments SCA must also include dynamic linking: the authentication code is tied to the specific amount and payee, so that a code stolen for one payment cannot be reused for another [3].",
+    "cited": [
+      "04_aml_transaction_monitoring",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "retrieved_top5": [
+      "04_aml_transaction_monitoring",
+      "12_deposit_guarantee_and_resolution",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "right_source": true,
+    "reference_recall": 0.875,
+    "correct": true
+  },
+  {
+    "id": "f29",
+    "kind": "paraphrase",
+    "question": "Does my bank have to tell me if hackers stole my personal data?",
+    "reference": "Affected customers must be informed when the risk is high; the authority must be told within 72 hours.",
+    "gold": [
+      "06_gdpr_in_banking"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.8893184485969735,
+    "answer": "Banks process large amounts of sensitive personal data, so data protection is a core compliance topic alongside financial regulation [1]. A personal data breach must be reported to the competent supervisory authority within 72 hours of the bank becoming aware of it, unless it is unlikely to result in a risk to individuals [2].",
+    "cited": [
+      "06_gdpr_in_banking"
+    ],
+    "retrieved_top5": [
+      "06_gdpr_in_banking",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "right_source": true,
+    "reference_recall": 0.5454545454545454,
+    "correct": true
+  },
+  {
+    "id": "f30",
+    "kind": "paraphrase",
+    "question": "Why does my bank sometimes ask me to confirm an online purchase instead of just blocking my card?",
+    "reference": "When the fraud model is uncertain, the bank can step up authentication, for example through 3-D Secure, instead of declining.",
+    "gold": [
+      "09_card_fraud_detection"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.5727690923147966,
+    "answer": "When a model is uncertain, the bank can step up authentication instead of declining, for example through 3-D Secure, which applies strong customer authentication to online card payments in Europe [1]. Card-not-present fraud: stolen card details used online or by phone [2].",
+    "cited": [
+      "09_card_fraud_detection"
+    ],
+    "retrieved_top5": [
+      "09_card_fraud_detection",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f31",
+    "kind": "paraphrase",
+    "question": "Can I ask my bank to treat me as an experienced investor with fewer protections?",
+    "reference": "Only if specific criteria on experience, trading activity and portfolio size are met.",
+    "gold": [
+      "13_mifid_ii_investor_protection"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9283754624857307,
+    "answer": "Professional clients, such as large companies and institutional investors, are assumed to have more experience, so some protections apply in a lighter form [2]. A retail client can ask to be treated as professional only if specific criteria on experience, trading activity and portfolio size are met [2].",
+    "cited": [
+      "13_mifid_ii_investor_protection"
+    ],
+    "retrieved_top5": [
+      "13_mifid_ii_investor_protection",
+      "12_deposit_guarantee_and_resolution",
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "right_source": true,
+    "reference_recall": 1.0,
+    "correct": true
+  },
+  {
+    "id": "f32",
+    "kind": "paraphrase",
+    "question": "Why does my bank record the phone call when I place an order to buy shares?",
+    "reference": "Firms must record conversations relating to client orders so the terms can be verified in disputes.",
+    "gold": [
+      "13_mifid_ii_investor_protection"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.5706931860956138,
+    "answer": "Firms must record telephone conversations and electronic communications that relate to client orders, so that the terms of transactions can be verified in case of disputes [1]. Banks must keep copies of identification documents and transaction records for at least five years after the end of the business relationship, so that authorities can reconstruct transactions during investigations [2].",
+    "cited": [
+      "03_kyc_customer_due_diligence",
+      "13_mifid_ii_investor_protection"
+    ],
+    "retrieved_top5": [
+      "13_mifid_ii_investor_protection",
+      "03_kyc_customer_due_diligence",
+      "06_gdpr_in_banking",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "right_source": true,
+    "reference_recall": 0.9,
+    "correct": true
+  },
+  {
+    "id": "f33",
+    "kind": "paraphrase",
+    "question": "What stops a bank from piling up lots of supposedly safe assets on very little capital?",
+    "reference": "The leverage ratio: Tier 1 capital over total exposure without risk weighting, at least 3%.",
+    "gold": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.5333773408607986,
+    "answer": "Capital protects a bank against losses, but a solvent bank can still fail if it cannot pay its obligations when they fall due [1]. Common Equity Tier 1 (CET1) is the highest-quality capital: ordinary shares and retained earnings, after deductions such as goodwill and certain deferred tax assets [2].",
+    "cited": [
+      "01_basel_iii_capital_requirements",
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "retrieved_top5": [
+      "02_liquidity_lcr_and_nsfr",
+      "01_basel_iii_capital_requirements"
+    ],
+    "right_source": true,
+    "reference_recall": 0.2,
+    "correct": false
+  },
+  {
+    "id": "f34",
+    "kind": "paraphrase",
+    "question": "How does a bank decide where to set the cut-off for blocking suspicious card payments?",
+    "reference": "By cost: the threshold that minimises the expected cost of missed fraud and false declines, usually not 0.5.",
+    "gold": [
+      "09_card_fraud_detection"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.7838782671386112,
+    "answer": "transaction risk analysis, where the payment service provider's real-time fraud monitoring shows a low risk and its overall fraud rate stays below set thresholds [1]. This creates a strong incentive for banks and merchants to implement SCA correctly, for example through 3-D Secure for online card payments [1].",
+    "cited": [
+      "05_psd2_strong_customer_authentication"
+    ],
+    "retrieved_top5": [
+      "05_psd2_strong_customer_authentication",
+      "14_sepa_payments_and_iso20022",
+      "09_card_fraud_detection",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "right_source": false,
+    "reference_recall": 0.2222222222222222,
+    "correct": false
+  },
+  {
+    "id": "f35",
+    "kind": "paraphrase",
+    "question": "What happens if a trading risk model keeps losing more money than it predicted on too many days?",
+    "reference": "Too many backtesting exceptions push the model into the yellow or red zone and increase its capital requirement.",
+    "gold": [
+      "11_market_risk_and_var"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.7453846967219709,
+    "answer": "Under the Basel traffic-light approach, too many exceptions over a year push a model into the yellow or red zone and increase its capital requirement, because the model is underestimating risk [1]. It mainly affects a bank's trading book [3].",
+    "cited": [
+      "11_market_risk_and_var"
+    ],
+    "retrieved_top5": [
+      "11_market_risk_and_var",
+      "08_credit_scoring_models",
+      "07_credit_risk_and_ifrs9"
+    ],
+    "right_source": true,
+    "reference_recall": 0.9090909090909091,
+    "correct": true
+  },
+  {
+    "id": "f36",
+    "kind": "multi",
+    "question": "Why must banks be able to explain machine learning models both in anti-money laundering and in credit scoring?",
+    "reference": "AML: banks must explain to auditors and supervisors why a model flags activity. Credit: explanations such as SHAP values give applicants reasons for adverse decisions and satisfy supervisors.",
+    "gold": [
+      "04_aml_transaction_monitoring",
+      "08_credit_scoring_models"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9548029869603145,
+    "answer": "Machine learning models are increasingly used to prioritise alerts or to detect networks of related accounts, but banks must be able to explain why a model flags activity to auditors and supervisors [2]. In the European Union the obligations come from the Anti-Money Laundering Directives and, increasingly, from the directly applicable EU anti-money laundering regulation [3].",
+    "cited": [
+      "03_kyc_customer_due_diligence",
+      "04_aml_transaction_monitoring"
+    ],
+    "retrieved_top5": [
+      "08_credit_scoring_models",
+      "04_aml_transaction_monitoring",
+      "03_kyc_customer_due_diligence",
+      "06_gdpr_in_banking"
+    ],
+    "right_source": true,
+    "reference_recall": 0.47058823529411764,
+    "correct": false
+  },
+  {
+    "id": "f37",
+    "kind": "multi",
+    "question": "How do the liquidity coverage ratio and deposit guarantee schemes each help against bank runs?",
+    "reference": "The LCR makes a bank hold liquid assets to survive 30 days of outflows such as deposit withdrawals; deposit insurance removes depositors' incentive to withdraw first.",
+    "gold": [
+      "02_liquidity_lcr_and_nsfr",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9517584253104319,
+    "answer": "When a bank fails, two sets of rules decide what happens to customers and creditors: deposit guarantee schemes protect ordinary depositors, and the resolution framework determines how the bank itself is restructured or wound down [1]. Basel III therefore introduced two liquidity standards [2].",
+    "cited": [
+      "02_liquidity_lcr_and_nsfr",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "retrieved_top5": [
+      "12_deposit_guarantee_and_resolution",
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "right_source": true,
+    "reference_recall": 0.1875,
+    "correct": false
+  },
+  {
+    "id": "f38",
+    "kind": "multi",
+    "question": "Which records must banks keep about customers and their orders under AML rules and MiFID II?",
+    "reference": "AML: identification documents and transaction records for at least five years after the relationship ends. MiFID II: recordings of calls and electronic communications relating to client orders.",
+    "gold": [
+      "03_kyc_customer_due_diligence",
+      "13_mifid_ii_investor_protection"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.6305577780721285,
+    "answer": "When a law requires the bank to keep records, such as the anti-money laundering obligation to keep customer and transaction records for at least five years after the relationship ends, the bank may refuse to delete them until the retention period expires [1]. Firms must record telephone conversations and electronic communications that relate to client orders, so that the terms of transactions can be verified in case of disputes [3].",
+    "cited": [
+      "06_gdpr_in_banking",
+      "13_mifid_ii_investor_protection"
+    ],
+    "retrieved_top5": [
+      "06_gdpr_in_banking",
+      "03_kyc_customer_due_diligence",
+      "13_mifid_ii_investor_protection"
+    ],
+    "right_source": true,
+    "reference_recall": 0.6470588235294118,
+    "correct": true
+  },
+  {
+    "id": "f39",
+    "kind": "multi",
+    "question": "How does Expected Shortfall in market risk differ from expected credit loss under IFRS 9?",
+    "reference": "Expected Shortfall is the average trading loss in the tail beyond the 97.5% percentile; expected credit loss is a forward-looking impairment allowance for loans, over 12 months or the lifetime.",
+    "gold": [
+      "07_credit_risk_and_ifrs9",
+      "11_market_risk_and_var"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9746078721144482,
+    "answer": "IFRS 9, the accounting standard for financial instruments, replaced the older incurred-loss model with a forward-looking expected credit loss (ECL) model [2]. FRTB also calibrates internal models to a period of significant market stress and uses different liquidity horizons for different risk factors [3].",
+    "cited": [
+      "07_credit_risk_and_ifrs9",
+      "11_market_risk_and_var"
+    ],
+    "retrieved_top5": [
+      "07_credit_risk_and_ifrs9",
+      "11_market_risk_and_var"
+    ],
+    "right_source": true,
+    "reference_recall": 0.23529411764705882,
+    "correct": false
+  },
+  {
+    "id": "f40",
+    "kind": "multi",
+    "question": "Which European authorities directly supervise high-risk institutions for money laundering and critical cloud providers for ICT risk?",
+    "reference": "The Anti-Money Laundering Authority (AMLA) in Frankfurt, and the European supervisory authorities for critical ICT third-party providers under DORA.",
+    "gold": [
+      "04_aml_transaction_monitoring",
+      "10_operational_risk_and_dora"
+    ],
+    "answerable": true,
+    "refused": false,
+    "gate_score": 0.9710697865578201,
+    "answer": "Critical ICT third-party providers, such as major cloud providers, are overseen directly by the European supervisory authorities [1]. The European Union has also created a dedicated Anti-Money Laundering Authority (AMLA), based in Frankfurt, to supervise the highest-risk institutions directly and to harmonise supervision across member states [2].",
+    "cited": [
+      "04_aml_transaction_monitoring",
+      "10_operational_risk_and_dora"
+    ],
+    "retrieved_top5": [
+      "10_operational_risk_and_dora",
+      "04_aml_transaction_monitoring",
+      "03_kyc_customer_due_diligence"
+    ],
+    "right_source": true,
+    "reference_recall": 0.9166666666666666,
+    "correct": true
+  },
+  {
+    "id": "f41",
+    "kind": "unanswerable",
+    "question": "What countercyclical buffer rate does Germany currently apply?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": true,
+    "gate_score": 0.01090724959286357,
+    "answer": "I don't know based on the provided documents.",
+    "cited": [],
+    "retrieved_top5": [
+      "01_basel_iii_capital_requirements",
+      "13_mifid_ii_investor_protection",
+      "05_psd2_strong_customer_authentication",
+      "02_liquidity_lcr_and_nsfr",
+      "04_aml_transaction_monitoring"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": true
+  },
+  {
+    "id": "f42",
+    "kind": "unanswerable",
+    "question": "How many alerts per year does a typical bank's transaction monitoring system generate?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": false,
+    "gate_score": 0.847733832482628,
+    "answer": "Money laundering is usually described in three stages: placement (introducing criminal cash into the financial system), layering (moving funds through many transactions to hide their origin) and integration (using the funds in the legitimate economy) [2]. Event-driven reviews are triggered by changes such as a new address in a high-risk country or an alert from transaction monitoring [3].",
+    "cited": [
+      "03_kyc_customer_due_diligence",
+      "04_aml_transaction_monitoring"
+    ],
+    "retrieved_top5": [
+      "04_aml_transaction_monitoring",
+      "03_kyc_customer_due_diligence",
+      "05_psd2_strong_customer_authentication",
+      "11_market_risk_and_var"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": false
+  },
+  {
+    "id": "f43",
+    "kind": "unanswerable",
+    "question": "Which European bank received the largest fine for KYC failures in 2023?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": true,
+    "gate_score": 0.01898997742088587,
+    "answer": "I don't know based on the provided documents.",
+    "cited": [],
+    "retrieved_top5": [
+      "10_operational_risk_and_dora",
+      "04_aml_transaction_monitoring",
+      "05_psd2_strong_customer_authentication",
+      "01_basel_iii_capital_requirements",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": true
+  },
+  {
+    "id": "f44",
+    "kind": "unanswerable",
+    "question": "What is ING Group's liquidity coverage ratio?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": true,
+    "gate_score": 0.022434686150118968,
+    "answer": "I don't know based on the provided documents.",
+    "cited": [],
+    "retrieved_top5": [
+      "02_liquidity_lcr_and_nsfr",
+      "01_basel_iii_capital_requirements"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": true
+  },
+  {
+    "id": "f45",
+    "kind": "unanswerable",
+    "question": "What are the Pillar 3 disclosure requirements for banks?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": false,
+    "gate_score": 0.8451647314447989,
+    "answer": "Supervisors can also impose bank-specific Pillar 2 requirements after their annual review of each institution [1]. In the European Union the framework is implemented through the Capital Requirements Regulation (CRR) and the Capital Requirements Directive (CRD) [2].",
+    "cited": [
+      "01_basel_iii_capital_requirements"
+    ],
+    "retrieved_top5": [
+      "01_basel_iii_capital_requirements",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": false
+  },
+  {
+    "id": "f46",
+    "kind": "unanswerable",
+    "question": "How does Basel IV change the risk weights for residential mortgages?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": true,
+    "gate_score": 0.1779194242519264,
+    "answer": "I don't know based on the provided documents.",
+    "cited": [],
+    "retrieved_top5": [
+      "01_basel_iii_capital_requirements",
+      "10_operational_risk_and_dora",
+      "11_market_risk_and_var"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": true
+  },
+  {
+    "id": "f47",
+    "kind": "unanswerable",
+    "question": "How do I reset my online banking password?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": false,
+    "gate_score": 0.7441808122145744,
+    "answer": "In the banking union, resolution of significant banks is handled by the Single Resolution Board, supported by the Single Resolution Fund financed by the banking industry [1]. Payment Initiation Service Providers (PISPs) start a payment directly from the customer's bank account, for example at an online checkout, without using a card [3].",
+    "cited": [
+      "05_psd2_strong_customer_authentication",
+      "12_deposit_guarantee_and_resolution"
+    ],
+    "retrieved_top5": [
+      "12_deposit_guarantee_and_resolution",
+      "05_psd2_strong_customer_authentication",
+      "02_liquidity_lcr_and_nsfr"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": false
+  },
+  {
+    "id": "f48",
+    "kind": "unanswerable",
+    "question": "What is the euro to US dollar exchange rate today?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": true,
+    "gate_score": 0.010349748191834247,
+    "answer": "I don't know based on the provided documents.",
+    "cited": [],
+    "retrieved_top5": [
+      "11_market_risk_and_var",
+      "14_sepa_payments_and_iso20022",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": true
+  },
+  {
+    "id": "f49",
+    "kind": "unanswerable",
+    "question": "Who is the president of the European Central Bank?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": false,
+    "gate_score": 0.8516504400885422,
+    "answer": "The Markets in Financial Instruments Directive (MiFID II) and its accompanying regulation set the rules for investment services in the European Union [1]. A central aim is to protect investors when banks sell or recommend financial instruments [1].",
+    "cited": [
+      "13_mifid_ii_investor_protection"
+    ],
+    "retrieved_top5": [
+      "13_mifid_ii_investor_protection",
+      "02_liquidity_lcr_and_nsfr",
+      "12_deposit_guarantee_and_resolution",
+      "03_kyc_customer_due_diligence"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": false
+  },
+  {
+    "id": "f50",
+    "kind": "unanswerable",
+    "question": "How does the Faster Payments system work in the United Kingdom?",
+    "reference": "",
+    "gold": [],
+    "answerable": false,
+    "refused": true,
+    "gate_score": 0.09715549480470001,
+    "answer": "I don't know based on the provided documents.",
+    "cited": [],
+    "retrieved_top5": [
+      "04_aml_transaction_monitoring",
+      "14_sepa_payments_and_iso20022",
+      "05_psd2_strong_customer_authentication"
+    ],
+    "right_source": false,
+    "reference_recall": null,
+    "correct": true
+  }
+]
