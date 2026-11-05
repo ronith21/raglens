@@ -5,9 +5,10 @@
 <p align="center">
   <a href="https://github.com/ronith21/raglens/actions/workflows/ci.yml"><img src="https://github.com/ronith21/raglens/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12-blue" alt="Python">
-  <img src="https://img.shields.io/badge/tests-188%20passing-brightgreen" alt="Tests">
+  <img src="https://img.shields.io/badge/tests-238%20passing-brightgreen" alt="Tests">
   <img src="https://img.shields.io/badge/coverage-98%25-brightgreen" alt="Coverage">
   <img src="https://img.shields.io/badge/mypy-strict-informational" alt="mypy strict">
+  <a href="docs/SECURITY_AUDIT.md"><img src="https://img.shields.io/badge/security-audited-blueviolet" alt="Security audited"></a>
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
 </p>
 
@@ -21,6 +22,7 @@
   <a href="#-results">Results</a> ·
   <a href="#-quickstart">Quickstart</a> ·
   <a href="#api">API</a> ·
+  <a href="#-security">Security</a> ·
   <a href="docs/HOW_IT_WORKS.md">How it works</a>
 </p>
 
@@ -109,8 +111,9 @@ screencast + ffmpeg). Run `make screenshots` to regenerate them.
 | 📌 **Evidence, not just citations** | Each `[n]` resolves to the supporting sentence with a support score; weak or missing citations raise warnings. |
 | 📊 **Honest evaluation** | Dev / held-out split; direct, paraphrased, multi-document and unanswerable questions; Hit@k, MRR, nDCG, citation precision, refusal accuracy, latency. |
 | 🤖 **Real-LLM ready** | Ollama or any OpenAI-compatible API; normalises citation styles real models write (`[1, 2]`, `[1-3]`, `[Source 2]`) and recognises reworded refusals. |
-| 🔒 **Privacy and operations** | PII masking (e-mail, IBAN, card, phone) before logging, SQLite analytics, Prometheus `/metrics`, request IDs, optional API key. |
-| 🛠️ **Engineering** | 188 tests at 98% coverage, strict mypy, CI on Python 3.11/3.12, Docker, Hugging Face Spaces deploy, Windows PowerShell task runner. |
+| 🔒 **Security and privacy** | Audited against 19 web-security categories with live attacks ([report](docs/SECURITY_AUDIT.md)): CSRF origin checks, rate limits, upload sanitising, safe defaults without an API key, security headers. PII is masked before logging. |
+| 📡 **Operations** | SQLite analytics, Prometheus `/metrics`, request IDs, dependency scanning in CI. |
+| 🛠️ **Engineering** | 238 tests at 98% coverage, strict mypy, CI on Python 3.11/3.12, Docker, Hugging Face Spaces deploy, Windows PowerShell task runner. |
 
 New to RAG? [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) explains every part in plain words.
 
@@ -272,7 +275,9 @@ Interactive docs at `http://localhost:8000/docs` (bundled assets, works offline)
 | GET | `/metrics` | Prometheus metrics |
 | GET | `/analytics` | SQL aggregates over the PII-masked query log * |
 
-\* Requires the `X-API-Key` header when `API_KEY` is set.
+\* Admin action: needs the `X-API-Key` header when `API_KEY` is set; without a key, only clients
+on loopback or private networks are allowed. Choosing a different `llm_provider` than the server's
+is also an admin action.
 
 `POST /ask` body: `question` (1–2000 chars), `retriever` (`bm25` \| `dense` \| `hybrid`),
 `rerank`, `multi_query`, `top_k` (1–20), `llm_provider` (`fake` \| `ollama` \| `openai`). The
@@ -288,8 +293,36 @@ Invoke-RestMethod -Method Post -Uri http://localhost:8000/ask -ContentType "appl
   -Body '{"question": "What are the three elements of strong customer authentication?"}'
 ```
 
-Errors: `401` missing API key, `409` empty index, `415` unsupported upload, `422` invalid body,
-`502` LLM provider failure. Every response carries an `X-Request-ID` header.
+Errors: `401` missing API key, `403` cross-site request or untrusted network, `409` empty index,
+`413` too many or too large files, `415` unsupported or disguised upload, `422` invalid body or
+unknown field, `429` rate limited (with `Retry-After`), `502` LLM provider failure. Every response
+carries an `X-Request-ID` header.
+
+## 🔐 Security
+
+RAGLens was attacked on running servers across 19 web-security categories (XSS, CSRF,
+SQL and NoSQL injection, uploads, path traversal, SSRF, CORS, IDOR, mass assignment, rate limits,
+open redirects and more). Each fix has a regression test.
+Full report: [docs/SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md).
+
+| Found | Fixed with |
+|---|---|
+| Uploaded documents could inject Markdown into the UI and load a tracking image from any server | Untrusted text kept inside one escaped HTML block; labels and errors escaped |
+| Any website could upload into a local RAGLens via the visitor's browser (CSRF) | `Origin` check on every write; Streamlit XSRF protection |
+| Admin endpoints were open to the network when no API key was set | Without a key, admin works only from loopback and private networks |
+| No rate limits; unlimited API-key guessing | Per-IP limits (120/min, admin 10/min, counted before the key check) |
+| Clients could switch the server to a paid LLM, and unknown fields were silently accepted | Provider switching is admin-only; `extra="forbid"` on request models |
+| Fake PDFs, long names and binary `.md` files caused 500s or junk chunks | Filename sanitising, content checks, chunked size limits, 422s instead of 500s |
+| A non-ASCII API key crashed auth with a 500; Host-header redirects; leaked provider errors and paths | Byte-wise constant-time compare, no slash redirects, generic errors, relative paths, security headers |
+
+| Setting | Default | Purpose |
+|---|---|---|
+| `API_KEY` | unset | Required for admin actions from outside `ADMIN_NETWORKS` |
+| `ADMIN_NETWORKS` | loopback + private ranges | Who may use admin endpoints when no key is set |
+| `ALLOWED_ORIGINS` | `[]` | Extra browser origins allowed to POST (same-origin always allowed) |
+| `UPLOADS_ENABLED` | `true` | Set `false` for public demos (the Hugging Face deploy does) |
+| `MAX_UPLOAD_FILES` / `MAX_UPLOAD_MB` | `20` / `20` | Upload limits per request and per file |
+| `RATE_LIMIT_PER_MINUTE` / `ADMIN_RATE_LIMIT_PER_MINUTE` | `120` / `10` | Per-IP limits; `0` disables |
 
 ## CLI
 
@@ -307,10 +340,10 @@ A real transcript is in [docs/proof/cli_demo.txt](docs/proof/cli_demo.txt).
 
 ## ✅ Testing
 
-188 tests, no network and no real LLM: metrics against hand-computed values, the API through
+238 tests, no network and no real LLM: metrics against hand-computed values, the API through
 `TestClient` (including every 4xx path and the API key), the CLI through `CliRunner`, LLM providers
-through mocked HTTP transports, PII redaction against false positives, and the gate's training and
-threshold selection.
+through mocked HTTP transports, PII redaction against false positives, the gate's training and
+threshold selection, and 50 security regression tests (one or more per audit finding).
 
 ```bash
 make check         # ruff + ruff format --check + mypy --strict + pytest (coverage >= 85%)
@@ -321,8 +354,8 @@ make screenshots   # starts the API + UI, writes docs/screenshots/ and the demo 
 ```
 
 Proof of the last full run: [`docs/proof/`](docs/proof/), including
-[`pytest.txt`](docs/proof/pytest.txt) (188 passed), [`coverage.txt`](docs/proof/coverage.txt)
-(98.48%), [`gate_report.md`](docs/proof/gate_report.md),
+[`pytest.txt`](docs/proof/pytest.txt) (238 passed), [`coverage.txt`](docs/proof/coverage.txt)
+(98.55%), [`security/`](docs/proof/security/) (attack output before and after), [`gate_report.md`](docs/proof/gate_report.md),
 [`banking/eval_report.md`](docs/proof/banking/eval_report.md),
 [`cli_demo.txt`](docs/proof/cli_demo.txt) and
 [`make_lint_test_eval.txt`](docs/proof/make_lint_test_eval.txt) from a clean copy of the repo.

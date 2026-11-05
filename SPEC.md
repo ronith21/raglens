@@ -106,8 +106,27 @@ No copyrighted text.
   counters/histograms on a per-app registry, and a SQLite query log (`QUERY_LOG_PATH`, WAL mode)
   summarised by `/analytics` with parameterised SQL aggregates.
 - **Privacy and access:** with `REDACT_PII=true` (default) e-mail addresses, IBANs, Luhn-valid card
-  numbers and phone numbers are masked before a question is logged. When `API_KEY` is set,
-  `/ingest`, `/eval` and `/analytics` require a matching `X-API-Key` header (constant-time compare).
+  numbers and phone numbers are masked before a question is logged.
+- **Security** (`src/raglens/api/security.py`, audit in `docs/SECURITY_AUDIT.md`):
+  - Admin actions (`/ingest`, `/eval`, `/analytics`, and a per-request `llm_provider` that differs
+    from the server's) require `X-API-Key` when `API_KEY` is set (constant-time, byte-wise
+    compare). Without a key, they are allowed only from `ADMIN_NETWORKS` (loopback and private
+    ranges) or the in-process client.
+  - Writes with a foreign `Origin` (or `Origin: null`) get 403 unless listed in
+    `ALLOWED_ORIGINS`; bodies over the upload budget get 413 from `Content-Length`.
+  - Per-IP sliding-window rate limits: `RATE_LIMIT_PER_MINUTE` for `/ask`,
+    `ADMIN_RATE_LIMIT_PER_MINUTE` for admin endpoints (counted before the key check); 429 with
+    `Retry-After`.
+  - Uploads: sanitised base names (POSIX and Windows separators, Unicode NFKC, safe charset,
+    Windows device names defused), content must match the extension (UTF-8 text or `%PDF-`),
+    `MAX_UPLOAD_FILES` and `MAX_UPLOAD_MB` read in chunks, parse failures are 422 and removed,
+    `UPLOADS_ENABLED=false` disables them.
+  - Request models forbid unknown fields; questions lose control characters; `X-Request-ID` is
+    echoed only if it matches `[A-Za-z0-9._-]{1,64}`.
+  - No slash redirects; security headers and CSP on every response; LLM failures return a
+    generic 502 with the request id; absolute server paths are never returned.
+  - UI: untrusted text stays inside one escaped HTML block (newlines become `<br>`), and Markdown
+    in labels and error messages is escaped.
 - **UI (Streamlit):** question box with example prompts, answer with citation badges, retrieved
   chunks with scores, per-retriever ranks and highlighted evidence, retriever / multi-query /
   rerank / top-k / provider controls, an evaluation dashboard tab (ablation table, charts, live

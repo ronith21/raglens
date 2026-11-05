@@ -165,6 +165,16 @@ and evaluation with an LLM judge plus feedback from real users.
 A: Under GDPR you should only keep data you need. The analytics need the question topics, not
 customers' IBANs or e-mail addresses, so they are masked before anything is written.
 
+**Q: How did you secure it?**
+A: I attacked my own running app across 19 web-security categories, with a script and a real
+browser. SQL injection, path traversal and CORS were already safe. Real findings included: an
+uploaded document could load a tracking image in users' browsers through Markdown injection (a
+classic RAG data-leak channel); any website could upload into a local instance through the
+visitor's browser (CSRF); admin endpoints were open when no API key was set; there were no rate
+limits; and a non-ASCII API key crashed authentication with a 500. I fixed each one, added a
+regression test for each (50 in total) and wrote up what is still a risk, such as prompt
+injection and the in-memory rate limiter.
+
 **Q: What was the hardest bug?**
 A: Two parts used different tokenizers, so "k_1" in the documents never matched "k1" in the
 question. I made every component share one tokenizer. Another: the chunker silently dropped the

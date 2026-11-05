@@ -4,12 +4,13 @@ Name                                        Stmts   Miss  Cover   Missing
 -------------------------------------------------------------------------
 src/raglens/__init__.py                         1      0   100%
 src/raglens/api/__init__.py                     0      0   100%
-src/raglens/api/main.py                       191      8    96%   130-132, 237, 253-254, 319-320
+src/raglens/api/main.py                       258      7    97%   179-181, 312-313, 449-450
+src/raglens/api/security.py                   106      2    98%   73, 158
 src/raglens/chunking/__init__.py                2      0   100%
 src/raglens/chunking/splitter.py              126      4    97%   13, 17, 152, 181
 src/raglens/cli/__init__.py                     0      0   100%
 src/raglens/cli/main.py                        79      7    91%   51, 88, 113-114, 151-154
-src/raglens/config.py                          42      0   100%
+src/raglens/config.py                          49      0   100%
 src/raglens/embed/__init__.py                   4      0   100%
 src/raglens/embed/base.py                      15      1    93%   20
 src/raglens/embed/hash.py                      45      1    98%   70
@@ -47,6 +48,5 @@ src/raglens/retrieve/multi_query.py            88      1    99%   59
 src/raglens/retrieve/store.py                  46      2    96%   77-78
 src/raglens/textutil.py                        76      1    99%   130
 -------------------------------------------------------------------------
-TOTAL                                        2309     35    98%
-Required test coverage of 85.0% reached. Total coverage: 98.48%
-============================= 188 passed in 15.91s =============================
+TOTAL                                        2489     36    99%
+Required test coverage of 85.0% reached. Total coverage: 98.55%

@@ -1,0 +1,74 @@
+== 2 CSRF / content-type confusion ==
+[ask text/plain (simple request, no preflight)] 422 {"detail":[{"type":"model_attributes_type","loc":["body"],"msg":"Input should be a valid dictionary or object to extract fields from","input":"{\"question\": \"
+[ingest multipart from evil origin, no key] 200 {"documents_added":0,"documents_skipped":1,"chunks_added":0,"total_documents":15,"total_chunks":99}
+== 9 CORS ==
+[preflight] 405 {}
+[simple GET ACAO] None
+== 14/15 auth (API key) ==
+[ingest no key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[ingest wrong key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[analytics no key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[analytics non-ASCII key byte] 500 Internal Server Error
+[eval no key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[analytics on OPEN (default config) no key] 200 {"total_queries":0,"answered":0,"refused":0,"refusal_rate":0.0,"citation_support_rate":0.0,"latency_p50_ms":0.0,"latency_p95_ms":0.0,"by_retriever":[],"top_documents":[],"top_questions":[],"refusal_reasons":[],"recent":[
+== 5/6 uploads and path traversal ==
+[upload name='../../evil.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":15,"total_chunks":99}
+[upload name='/etc/evil.md'] 200 {"documents_added":0,"documents_skipped":1,"chunks_added":0,"total_documents":15,"total_chunks":99}
+[upload name='..\\..\\win.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":16,"total_chunks":100}
+[upload name='a.md\x00.exe'] 415 {"detail":"Unsupported file type for 'a.md%00.exe'; allowed: ['.markdown', '.md', '.pdf', '.text', '.txt']"}
+[upload name='.md'] 415 {"detail":"Unsupported file type for '.md'; allowed: ['.markdown', '.md', '.pdf', '.text', '.txt']"}
+[upload name='UP.MD'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":17,"total_chunks":101}
+[upload name='x.md.exe'] 415 {"detail":"Unsupported file type for 'x.md.exe'; allowed: ['.markdown', '.md', '.pdf', '.text', '.txt']"}
+[upload name='x.exe'] 415 {"detail":"Unsupported file type for 'x.exe'; allowed: ['.markdown', '.md', '.pdf', '.text', '.txt']"}
+[upload name=''] 422 {"detail":[{"type":"value_error","loc":["body","files",0],"msg":"Value error, Expected UploadFile, received: <class 'str
+[upload name='con.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":18,"total_chunks":102}
+[upload name='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'] 500 Internal Server Error
+[upload name='<img src=x onerror=alert(1)>.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":19,"total_chunks":103}
+[binary content as .md] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":51,"total_documents":20,"total_chunks":154}
+[fake pdf] 500 Internal Server Error
+[25MB upload (0.6s)] 413 {"detail":"'big.md' exceeds 20 MB"}
+[300 files in one request (open)] 200 {"documents_added":300,"documents_skipped":0,"chunks_added":300,"total_documents":315,"total_chunks":399}
+== 6 path traversal on GET ==
+[GET /static/swagger/../../../../etc/passwd] 404 False
+[GET /static/swagger/%2e%2e/%2e%2e/%2e%2e/etc/passwd] 404 False
+[GET /static/swagger/..%2f..%2f..%2fetc%2fpasswd] 404 False
+[GET /static/swagger/....//....//etc/passwd] 404 False
+== 3/4 SQL / NoSQL injection ==
+[ask "'); DROP TABLE queries;--"] 200 {"question":"'); DROP TABLE queries;--","answer":"I don't know based on the provided docum
+[ask '" OR 1=1 --'] 200 {"question":"\" OR 1=1 --","answer":"I don't know based on the provided documents.","refus
+[ask '{"$ne": null}'] 200 {"question":"{\"$ne\": null}","answer":"I don't know based on the provided documents.","re
+[ask "1; ATTACH DATABASE '/tmp/x.db'"] 200 {"question":"1; ATTACH DATABASE '/tmp/x.db' AS x;--","answer":"I don't know based on the p
+[ask question as object] 422 {"detail":[{"type":"string_type","loc":["body","question"],"msg":"Input should be a valid string","input":{"$ne":null}}]}
+[analytics after injection] 200 {"total_queries":4,"answered":0,"refused":4,"refusal_rate":1.0,"citation_support_rate":0.0,"latency_p50_ms":2.3545,"late
+[analytics limit=1 OR 1=1] 422 {"detail":[{"type":"int_parsing","loc":["query","limit"],"msg":"Input should be a valid integer, unable to parse string as an integer","inpu
+== 8 input validation ==
+[question 2001 chars] 422 {"detail":[{"type":"string_too_long","loc":["body","question"],"msg":"String should have at most 200
+[question whitespace] 422 {"detail":"question must not be blank"}
+[top_k 0] 422 {"detail":[{"type":"greater_than_equal","loc":["body","top_k"],"msg":"Input should be greater than o
+[top_k '5' string] 200 {"question":"CET1","answer":"The Pillar 1 minimums are a CET1 ratio of 4.5% of RWA, a Tier 1 ratio o
+[retriever bogus] 422 {"detail":[{"type":"literal_error","loc":["body","retriever"],"msg":"Input should be 'bm25', 'dense'
+[malformed json] 422 {"detail":[{"type":"json_invalid","loc":["body",1],"msg":"JSON decode error","input":{},"ctx":{"erro
+[deep nesting] 400 {"detail":"There was an error parsing the body"}
+[NUL/control chars] 200 {"question":"CET1\u0000\u0007\u001b[31m","answer":"Common Equity Tier 1 (CET1) is the highest-qualit
+[X-Request-ID 8000 chars reflected] 200 8000
+[X-Request-ID with quotes reflected] abc" injected="1
+[eval limit huge] 200 {"config":"hybrid","num_questions":63,"num_answerable":55,"num_unanswerable":8,"
+== 11 mass assignment ==
+[extra fields] 200 {"question":"CET1","answer":"The Pillar 1 minimums are a CET1 ratio of 4.5% of RWA, a Tier 1 ratio of 6% and a total cap
+[client switches LLM provider] 502 {"detail":"Ollama request failed after 4 attempt(s): [Errno 111] Connection refused (is Ollama running at http://localhost:11434?)"}
+[client enables reranker] 200 {"question":"What is CET1 capital?","answer":"Common Equity Tier 1 (CET1) is the
+== 10 IDOR ==
+[documents list (no key)] 200 [{"doc_id":"e85702431fc33899","title":"Basel III Capital Requirements","source_path":"/tmp/claude-0/-home-claude/5c4ee252-6916-5dbf-97ca-30e38ea92c43/scratchpad
+[eval/latest (no key)] 200 {"meta":{"generated_at":"2026-11-03 14:03 UTC","python":"3.11.18","platform":"Li
+[metrics (no key)] 200 # HELP raglens_http_requests_total HTTP requests by method, route template and s
+== 18 open redirect ==
+[GET /docs/ host=evil.example] 307 Location=http://evil.example/docs
+[GET //evil.example/ host=-] 404 Location=None
+[GET /health/ host=evil.example] 307 Location=http://evil.example/health
+[GET /\evil.example host=-] 404 Location=None
+== 16 rate limiting ==
+[300 /ask in 13.4s] {200: 300}
+[200 API-key guesses] {401: 200}
+== headers ==
+{'content-security-policy': None, 'x-content-type-options': None, 'x-frame-options': None, 'referrer-policy': None, 'server': 'uvicorn'}
+[404 body] 404 {"detail":"Not Found"}

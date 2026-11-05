@@ -1,0 +1,74 @@
+== 2 CSRF / content-type confusion ==
+[ask text/plain (simple request, no preflight)] 403 {"detail":"Cross-origin request blocked"}
+[ingest multipart from evil origin, no key] 403 {"detail":"Cross-origin request blocked"}
+== 9 CORS ==
+[preflight] 405 {}
+[simple GET ACAO] None
+== 14/15 auth (API key) ==
+[ingest no key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[ingest wrong key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[analytics no key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[analytics non-ASCII key byte] 401 {"detail":"Missing or invalid X-API-Key header"}
+[eval no key] 401 {"detail":"Missing or invalid X-API-Key header"}
+[analytics on OPEN (default config) no key] 200 {"total_queries":1,"answered":1,"refused":0,"refusal_rate":0.0,"citation_support_rate":1.0,"latency_p50_ms":3.448,"latency_p95_ms":3.448,"by_retriever":[{"label":"hybrid","count":1}],"top_documents":[{"label":"<img src=x
+== 5/6 uploads and path traversal ==
+[upload name='../../evil.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":15,"total_chunks":99}
+[upload name='/etc/evil.md'] 200 {"documents_added":0,"documents_skipped":1,"chunks_added":0,"total_documents":15,"total_chunks":99}
+[upload name='..\\..\\win.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":16,"total_chunks":100}
+[upload name='a.md\x00.exe'] 415 {"detail":"Unsupported file type for 'a.md_00.exe'; allowed: ['.markdown', '.md', '.pdf', '.text', '.txt']"}
+[upload name='.md'] 422 {"detail":"Invalid file name '.md'"}
+[upload name='UP.MD'] 429 {"detail":"Rate limit exceeded; slow down"}
+[upload name='x.md.exe'] 429 {"detail":"Rate limit exceeded; slow down"}
+[upload name='x.exe'] 429 {"detail":"Rate limit exceeded; slow down"}
+[upload name=''] 429 {"detail":"Rate limit exceeded; slow down"}
+[upload name='con.md'] 429 {"detail":"Rate limit exceeded; slow down"}
+[upload name='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'] 429 {"detail":"Rate limit exceeded; slow down"}
+[upload name='<img src=x onerror=alert(1)>.md'] 429 {"detail":"Rate limit exceeded; slow down"}
+[binary content as .md] 429 {"detail":"Rate limit exceeded; slow down"}
+[fake pdf] 429 {"detail":"Rate limit exceeded; slow down"}
+[25MB upload (0.2s)] 429 {"detail":"Rate limit exceeded; slow down"}
+[300 files in one request (open)] 413 {"detail":"At most 20 files per request"}
+== 6 path traversal on GET ==
+[GET /static/swagger/../../../../etc/passwd] 404 False
+[GET /static/swagger/%2e%2e/%2e%2e/%2e%2e/etc/passwd] 404 False
+[GET /static/swagger/..%2f..%2f..%2fetc%2fpasswd] 404 False
+[GET /static/swagger/....//....//etc/passwd] 404 False
+== 3/4 SQL / NoSQL injection ==
+[ask "'); DROP TABLE queries;--"] 200 {"question":"'); DROP TABLE queries;--","answer":"I don't know based on the provided docum
+[ask '" OR 1=1 --'] 200 {"question":"\" OR 1=1 --","answer":"I don't know based on the provided documents.","refus
+[ask '{"$ne": null}'] 200 {"question":"{\"$ne\": null}","answer":"I don't know based on the provided documents.","re
+[ask "1; ATTACH DATABASE '/tmp/x.db'"] 200 {"question":"1; ATTACH DATABASE '/tmp/x.db' AS x;--","answer":"I don't know based on the p
+[ask question as object] 422 {"detail":[{"type":"string_type","loc":["body","question"],"msg":"Input should be a valid string","input":{"$ne":null}}]}
+[analytics after injection] 429 {"detail":"Rate limit exceeded; slow down"}
+[analytics limit=1 OR 1=1] 429 {"detail":"Rate limit exceeded; slow down"}
+== 8 input validation ==
+[question 2001 chars] 422 {"detail":[{"type":"string_too_long","loc":["body","question"],"msg":"String should have at most 200
+[question whitespace] 422 {"detail":"question must not be blank"}
+[top_k 0] 422 {"detail":[{"type":"greater_than_equal","loc":["body","top_k"],"msg":"Input should be greater than o
+[top_k '5' string] 200 {"question":"CET1","answer":"The Pillar 1 minimums are a CET1 ratio of 4.5% of RWA, a Tier 1 ratio o
+[retriever bogus] 422 {"detail":[{"type":"literal_error","loc":["body","retriever"],"msg":"Input should be 'bm25', 'dense'
+[malformed json] 422 {"detail":[{"type":"json_invalid","loc":["body",1],"msg":"JSON decode error","input":{},"ctx":{"erro
+[deep nesting] 400 {"detail":"There was an error parsing the body"}
+[NUL/control chars] 200 {"question":"CET1[31m","answer":"Common Equity Tier 1 (CET1) is the highest-quality capital: ordinar
+[X-Request-ID 8000 chars reflected] 200 16
+[X-Request-ID with quotes reflected] cef48dadf2a54e79
+[eval limit huge] 429 {"detail":"Rate limit exceeded; slow down"}
+== 11 mass assignment ==
+[extra fields] 422 {"detail":[{"type":"extra_forbidden","loc":["body","admin"],"msg":"Extra inputs are not permitted","input":true},{"type"
+[client switches LLM provider] 401 {"detail":"Missing or invalid X-API-Key header"}
+[client enables reranker] 200 {"question":"What is CET1 capital?","answer":"Common Equity Tier 1 (CET1) is the
+== 10 IDOR ==
+[documents list (no key)] 200 [{"doc_id":"f6295e06c0acd01a","title":"Know Your Customer and Customer Due Diligence","source_path":"03_kyc_customer_due_diligence.md","num_chunks":6},{"doc_id"
+[eval/latest (no key)] 200 {"meta":{"generated_at":"2026-11-03 14:03 UTC","python":"3.11.18","platform":"Li
+[metrics (no key)] 200 # HELP raglens_http_requests_total HTTP requests by method, route template and s
+== 18 open redirect ==
+[GET /docs/ host=evil.example] 404 Location=None
+[GET //evil.example/ host=-] 404 Location=None
+[GET /health/ host=evil.example] 404 Location=None
+[GET /\evil.example host=-] 404 Location=None
+== 16 rate limiting ==
+[300 /ask in 12.6s] {200: 119, 429: 181}
+[200 API-key guesses] {429: 200}
+== headers ==
+{'content-security-policy': "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'", 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'referrer-policy': 'no-referrer', 'server': None}
+[404 body] 404 {"detail":"Not Found"}

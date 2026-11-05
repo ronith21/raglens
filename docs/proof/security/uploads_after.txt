@@ -1,0 +1,15 @@
+[name='../../evil.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":15,"total_chunks":99}
+[name='..\\..\\win.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":16,"total_chunks":100}
+[name='a.md\x00.exe'] 415 {"detail":"Unsupported file type for 'a.md_00.exe'; allowed: ['.markdown', '.md', '.pdf', '.text', '.txt']"}
+[name='.md'] 422 {"detail":"Invalid file name '.md'"}
+[name='UP.MD'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":17,"total_chunks":101}
+[name='x.md.exe'] 415 {"detail":"Unsupported file type for 'x.md.exe'; allowed: ['.markdown', '.md', '.pdf', '.text', '.txt']"}
+[name='con.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":18,"total_chunks":102}
+[name='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":19,"total_chunks":103}
+[name='<img src=x onerror=alert(1)>.md'] 200 {"documents_added":1,"documents_skipped":0,"chunks_added":1,"total_documents":20,"total_chunks":104}
+[binary content as .md] 415 {"detail":"'bin.md' is not UTF-8 text"}
+[fake pdf] 415 {"detail":"'fake.pdf' is not a PDF file"}
+[corrupt pdf with magic bytes] 422 {"detail":"Could not parse the uploaded file(s)"}
+[25MB upload] 413 {"detail":"'big.md' exceeds 20 MB"}
+   took 0.2s
+[analytics after] 200

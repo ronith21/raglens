@@ -1,6 +1,6 @@
 ruff check .
 All checks passed!
 ruff format --check .
-107 files already formatted
+116 files already formatted
 mypy src
-Success: no issues found in 47 source files
+Success: no issues found in 48 source files
