@@ -55,8 +55,26 @@ class Settings(BaseSettings):
     query_log_enabled: bool = True
     query_log_path: str = "data/logs/queries.db"
     redact_pii: bool = True
-    # When set, POST /ingest, POST /eval and GET /analytics require the X-API-Key header.
+    # Security. When API_KEY is set, admin actions (POST /ingest, POST /eval, GET /analytics and
+    # switching the LLM provider per request) require the X-API-Key header. When it is unset they
+    # are only allowed from ADMIN_NETWORKS (loopback and private LANs), never from the internet.
     api_key: str = ""
+    admin_networks: list[str] = [
+        "127.0.0.0/8",
+        "::1/128",
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/16",
+        "fc00::/7",
+    ]
+    # Extra browser origins allowed to send POST requests (same-origin is always allowed).
+    allowed_origins: list[str] = []
+    uploads_enabled: bool = True
+    max_upload_files: int = 20
+    max_upload_mb: int = 20
+    # Requests per minute per client IP; 0 disables. Admin covers ingest, eval and analytics.
+    rate_limit_per_minute: int = 120
+    admin_rate_limit_per_minute: int = 10
 
     # Index, corpus & API
     corpus_dir: str = "data/sample_corpus"

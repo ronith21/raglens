@@ -3,9 +3,6 @@
 import importlib.resources
 import json
 import logging
-import secrets
-import shutil
-import tempfile
 import time
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
@@ -27,11 +24,26 @@ from fastapi import (
     status,
 )
 from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from raglens import __version__
+from raglens.api.security import (
+    API_CSP,
+    DOCS_CSP,
+    SECURITY_HEADERS,
+    UNSAFE_METHODS,
+    RateLimiter,
+    clean_request_id,
+    is_trusted_client,
+    keys_match,
+    origin_allowed,
+    public_source_path,
+    safe_upload_name,
+    strip_control_chars,
+    validate_upload_content,
+)
 from raglens.config import Settings
 from raglens.engine import DocumentInfo, IngestReport, RAGEngine
 from raglens.eval.dataset import load_dataset
@@ -53,7 +65,7 @@ access_logger = logging.getLogger("raglens.access")
 
 RetrieverName = Literal["bm25", "dense", "hybrid"]
 ProviderName = Literal["fake", "ollama", "openai"]
-MAX_UPLOAD_BYTES = 20 * 1024 * 1024
+UPLOAD_READ_CHUNK = 1024 * 1024
 
 
 class HealthResponse(BaseModel):
@@ -68,10 +80,13 @@ class HealthResponse(BaseModel):
     reranker_enabled: bool
     corpus: str = ""
     refusal_gate: str = ""
+    uploads_enabled: bool = True
 
 
 class AskRequest(BaseModel):
-    """Body of ``POST /ask``."""
+    """Body of ``POST /ask``. Unknown fields are rejected rather than silently ignored."""
+
+    model_config = ConfigDict(extra="forbid")
 
     question: str = Field(..., min_length=1, max_length=2000, examples=["What is BM25?"])
     retriever: RetrieverName = "hybrid"
@@ -80,9 +95,17 @@ class AskRequest(BaseModel):
     llm_provider: ProviderName | None = Field(None, description="Override LLM_PROVIDER")
     multi_query: bool = Field(False, description="Fuse retrieval over rewritten query variants")
 
+    @field_validator("question")
+    @classmethod
+    def _clean_question(cls, value: str) -> str:
+        """Drop control characters (terminal escapes, NUL) that have no place in a question."""
+        return strip_control_chars(value)
+
 
 class EvalRequest(BaseModel):
     """Body of ``POST /eval``."""
+
+    model_config = ConfigDict(extra="forbid")
 
     retriever: RetrieverName = "hybrid"
     rerank: bool = False
@@ -112,17 +135,43 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
         redact=app_settings.redact_pii,
     )
 
-    def require_api_key(x_api_key: Annotated[str | None, Header()] = None) -> None:
-        """Reject the request unless API_KEY is unset or the X-API-Key header matches it."""
-        expected = app_settings.api_key
-        if expected and not secrets.compare_digest(x_api_key or "", expected):
+    limiter = RateLimiter()
+
+    def client_host(request: Request) -> str:
+        return request.client.host if request.client else ""
+
+    def enforce_rate_limit(request: Request, bucket: str, limit: int) -> None:
+        """Raise 429 with Retry-After when this client exceeded ``limit`` requests per minute."""
+        retry_after = limiter.hit(f"{bucket}:{client_host(request)}", limit)
+        if retry_after is not None:
             raise HTTPException(
-                status.HTTP_401_UNAUTHORIZED,
-                "Missing or invalid X-API-Key header",
-                headers={"WWW-Authenticate": "API-Key"},
+                status.HTTP_429_TOO_MANY_REQUESTS,
+                "Rate limit exceeded; slow down",
+                headers={"Retry-After": str(max(1, round(retry_after)))},
             )
 
-    protected = [Depends(require_api_key)]
+    def check_admin(request: Request, x_api_key: str | None) -> None:
+        """Admin actions need the API key, or a trusted network when no key is configured."""
+        expected = app_settings.api_key
+        if expected:
+            if not keys_match(x_api_key, expected):
+                raise HTTPException(
+                    status.HTTP_401_UNAUTHORIZED,
+                    "Missing or invalid X-API-Key header",
+                    headers={"WWW-Authenticate": "API-Key"},
+                )
+        elif not is_trusted_client(client_host(request), app_settings.admin_networks):
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                "Admin endpoints are only available from trusted networks unless API_KEY is set",
+            )
+
+    def require_admin(request: Request, x_api_key: Annotated[str | None, Header()] = None) -> None:
+        """Dependency: rate-limit (before auth, to slow key guessing), then check admin rights."""
+        enforce_rate_limit(request, "admin", app_settings.admin_rate_limit_per_minute)
+        check_admin(request, x_api_key)
+
+    protected = [Depends(require_admin)]
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -143,6 +192,7 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
         ),
         lifespan=lifespan,
         docs_url=None,  # served below from bundled assets, so /docs works offline
+        redirect_slashes=False,  # no Host-header-derived redirects (/docs/ is simply 404)
     )
     app.state.metrics = metrics
     app.state.query_log = query_log
@@ -151,13 +201,13 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
     async def observe(
         request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
-        """Assign a request id, time the request, record metrics and an access log line."""
-        request_id = request.headers.get("x-request-id") or uuid.uuid4().hex[:16]
+        """Request id, CSRF origin check, size limit, metrics, access log and security headers."""
+        request_id = clean_request_id(request.headers.get("x-request-id")) or uuid.uuid4().hex[:16]
         request.state.request_id = request_id
         start = time.perf_counter()
         status_code = 500
         try:
-            response = await call_next(request)
+            response = await guard(request) or await call_next(request)
             status_code = response.status_code
         finally:
             elapsed = time.perf_counter() - start
@@ -179,7 +229,28 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
                 },
             )
         response.headers["X-Request-ID"] = request_id
+        for name, value in SECURITY_HEADERS.items():
+            response.headers.setdefault(name, value)
+        csp = DOCS_CSP if request.url.path in {"/docs", "/redoc"} else API_CSP
+        response.headers.setdefault("Content-Security-Policy", csp)
         return response
+
+    max_request_bytes = (
+        (app_settings.max_upload_files * app_settings.max_upload_mb + 1) * 1024 * 1024
+    )
+
+    async def guard(request: Request) -> Response | None:
+        """Reject cross-site browser writes (CSRF) and oversized bodies before routing."""
+        if request.method in UNSAFE_METHODS and not origin_allowed(
+            request.headers.get("origin"),
+            request.headers.get("host"),
+            app_settings.allowed_origins,
+        ):
+            return JSONResponse({"detail": "Cross-origin request blocked"}, status_code=403)
+        length = request.headers.get("content-length")
+        if length and length.isdigit() and int(length) > max_request_bytes:
+            return JSONResponse({"detail": "Request body too large"}, status_code=413)
+        return None
 
     # Swagger UI assets bundled by fastapi-offline (OpenAPI 3.1 capable), so /docs needs no CDN.
     swagger_dir = Path(str(importlib.resources.files("fastapi_offline") / "static"))
@@ -210,54 +281,93 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
             reranker_enabled=engine.settings.enable_reranker,
             corpus=Path(engine.settings.corpus_dir).name,
             refusal_gate=type(engine.gate).__name__,
+            uploads_enabled=app_settings.uploads_enabled,
         )
 
     @app.get("/documents", response_model=list[DocumentInfo], tags=["index"])
     def documents(engine: EngineDep) -> list[DocumentInfo]:
         """List indexed documents."""
-        return engine.documents()
+        return [
+            doc.model_copy(update={"source_path": public_source_path(doc.source_path)})
+            for doc in engine.documents()
+        ]
 
     @app.post("/ingest", response_model=IngestReport, tags=["index"], dependencies=protected)
     async def ingest(
         engine: EngineDep, files: Annotated[list[UploadFile], File(...)]
     ) -> IngestReport:
         """Upload .md / .txt / .pdf files, chunk and index them (idempotent per file)."""
-        with tempfile.TemporaryDirectory() as tmp:
-            saved: list[Path] = []
-            for upload in files:
-                name = Path(upload.filename or "").name
-                if Path(name).suffix.lower() not in SUPPORTED_EXTENSIONS:
-                    raise HTTPException(
-                        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                        f"Unsupported file type for {name!r}; allowed: "
-                        f"{sorted(SUPPORTED_EXTENSIONS)}",
-                    )
-                data = await upload.read()
-                if len(data) > MAX_UPLOAD_BYTES:
-                    raise HTTPException(
-                        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, f"{name!r} exceeds 20 MB"
-                    )
-                target = Path(tmp) / name
-                target.write_bytes(data)
-                saved.append(target)
-
-            uploads_dir = Path(engine.settings.corpus_dir) / "uploads"
-            uploads_dir.mkdir(parents=True, exist_ok=True)
-            kept = []
-            for path in saved:
-                dest = uploads_dir / path.name
-                shutil.copyfile(path, dest)
-                kept.append(dest)
+        if not app_settings.uploads_enabled:
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "Uploads are disabled on this server")
+        if len(files) > app_settings.max_upload_files:
+            raise HTTPException(
+                413,
+                f"At most {app_settings.max_upload_files} files per request",
+            )
+        max_bytes = app_settings.max_upload_mb * 1024 * 1024
+        accepted: dict[str, bytes] = {}
+        for upload in files:
             try:
-                report = engine.ingest_paths(kept)
+                name = safe_upload_name(upload.filename or "")
             except ValueError as exc:
                 raise HTTPException(422, str(exc)) from exc
-            metrics.index_chunks.set(report.total_chunks)
-            return report
+            if Path(name).suffix not in SUPPORTED_EXTENSIONS:
+                raise HTTPException(
+                    status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                    f"Unsupported file type for {name!r}; allowed: {sorted(SUPPORTED_EXTENSIONS)}",
+                )
+            data = await read_limited(upload, max_bytes)
+            if data is None:
+                raise HTTPException(
+                    413,
+                    f"{name!r} exceeds {app_settings.max_upload_mb} MB",
+                )
+            try:
+                validate_upload_content(name, data)
+            except ValueError as exc:
+                raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, str(exc)) from exc
+            accepted[name] = data
+
+        uploads_dir = Path(engine.settings.corpus_dir) / "uploads"
+        uploads_dir.mkdir(parents=True, exist_ok=True)
+        kept = []
+        for name, data in accepted.items():
+            dest = uploads_dir / name
+            dest.write_bytes(data)
+            kept.append(dest)
+        try:
+            report = engine.ingest_paths(kept)
+        except Exception as exc:
+            # Parser failures (corrupt PDF, unreadable text) are the client's input, not a 500.
+            for path in kept:
+                path.unlink(missing_ok=True)
+            logger.warning("Ingest failed: %s", exc)
+            raise HTTPException(422, "Could not parse the uploaded file(s)") from exc
+        metrics.index_chunks.set(report.total_chunks)
+        return report
+
+    async def read_limited(upload: UploadFile, max_bytes: int) -> bytes | None:
+        """Read an upload in chunks, returning ``None`` as soon as it exceeds ``max_bytes``."""
+        parts: list[bytes] = []
+        size = 0
+        while chunk := await upload.read(UPLOAD_READ_CHUNK):
+            size += len(chunk)
+            if size > max_bytes:
+                return None
+            parts.append(chunk)
+        return b"".join(parts)
 
     @app.post("/ask", response_model=RAGAnswer, tags=["qa"])
-    def ask(body: AskRequest, request: Request, engine: EngineDep) -> RAGAnswer:
+    def ask(
+        body: AskRequest,
+        request: Request,
+        engine: EngineDep,
+        x_api_key: Annotated[str | None, Header()] = None,
+    ) -> RAGAnswer:
         """Answer a question with inline citations, or refuse when evidence is weak."""
+        enforce_rate_limit(request, "ask", app_settings.rate_limit_per_minute)
+        if body.llm_provider and body.llm_provider != engine.settings.llm_provider:
+            check_admin(request, x_api_key)  # switching to a paid/remote LLM is an admin action
         if not body.question.strip():
             raise HTTPException(422, "question must not be blank")
         if not engine.chunks:
@@ -274,8 +384,27 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
             )
         except LLMError as exc:
             metrics.answers.labels(body.retriever, "error").inc()
-            raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(exc)) from exc
+            raise llm_unavailable(exc, request) from exc
         record_answer(answer, request.state.request_id, time.perf_counter() - start)
+        return scrub_paths(answer)
+
+    def llm_unavailable(exc: LLMError, request: Request) -> HTTPException:
+        """Log provider details server-side; tell the client only that the LLM failed."""
+        request_id = request.state.request_id
+        logger.error("LLM provider failed (request %s): %s", request_id, exc)
+        return HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            f"The language model provider is unavailable (request id {request_id})",
+        )
+
+    def scrub_paths(answer: RAGAnswer) -> RAGAnswer:
+        """Replace absolute server paths in citations and passages with public ones."""
+        for citation in answer.citations:
+            citation.source_path = public_source_path(citation.source_path)
+        for context in answer.contexts:
+            meta = context.chunk.metadata
+            if "source_path" in meta:
+                meta["source_path"] = public_source_path(str(meta["source_path"]))
         return answer
 
     def record_answer(answer: RAGAnswer, request_id: str, elapsed_s: float) -> None:
@@ -302,11 +431,12 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
         )
 
     @app.post("/eval", response_model=EvalReport, tags=["eval"], dependencies=protected)
-    def run_eval(body: EvalRequest, engine: EngineDep) -> EvalReport:
+    def run_eval(body: EvalRequest, request: Request, engine: EngineDep) -> EvalReport:
         """Evaluate the current index on the configured dataset with the configured LLM."""
         dataset_path = Path(engine.settings.eval_dataset)
         if not dataset_path.exists():
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"Dataset not found: {dataset_path}")
+            logger.error("Eval dataset not found: %s", dataset_path)
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Evaluation dataset not found")
         dataset = load_dataset(dataset_path)
         if body.limit:
             dataset = dataset[: body.limit]
@@ -317,7 +447,7 @@ def create_app(settings: Settings | None = None, engine: RAGEngine | None = None
         try:
             report = evaluate(pipeline, dataset, DEFAULT_KS)
         except LLMError as exc:
-            raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(exc)) from exc
+            raise llm_unavailable(exc, request) from exc
         logger.info("Evaluated %d questions in %.2fs", len(dataset), time.perf_counter() - start)
         if not body.include_questions:
             report.questions = []
