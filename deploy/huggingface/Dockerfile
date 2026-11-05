@@ -17,7 +17,7 @@ RUN useradd --create-home --uid 1000 user
 WORKDIR /home/user/app
 COPY --chown=user pyproject.toml README.md LICENSE ./
 COPY --chown=user src ./src
-RUN pip install --upgrade pip && pip install .
+RUN pip install --upgrade pip "setuptools>=84.1" && pip install .
 COPY --chown=user data ./data
 COPY --chown=user docs/proof ./docs/proof
 COPY --chown=user .streamlit ./.streamlit
