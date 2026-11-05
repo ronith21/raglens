@@ -80,7 +80,7 @@ def test_ask_blank_question_rejected(client: TestClient) -> None:
 
 
 def test_ask_llm_failure_maps_to_502(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Provider failures surface as 502 with the provider's message."""
+    """Provider failures surface as 502 without leaking provider details to the client."""
 
     def boom(*args: object, **kwargs: object) -> None:
         raise LLMError("Ollama request failed after 3 attempt(s)")
@@ -88,7 +88,10 @@ def test_ask_llm_failure_maps_to_502(client: TestClient, monkeypatch: pytest.Mon
     monkeypatch.setattr(RAGEngine, "ask", boom)
     response = client.post("/ask", json={"question": "anything"})
     assert response.status_code == 502
-    assert "Ollama" in response.json()["detail"]
+    detail = response.json()["detail"]
+    assert "unavailable" in detail
+    assert response.headers["X-Request-ID"] in detail
+    assert "Ollama" not in detail
 
 
 def test_ask_empty_index_conflict(tmp_path: Path) -> None:
