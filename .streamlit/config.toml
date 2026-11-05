@@ -10,3 +10,10 @@ toolbarMode = "minimal"
 
 [browser]
 gatherUsageStats = false
+
+[server]
+# Defaults made explicit: Streamlit's own CSRF and CORS protection, and an upload cap that
+# matches the API's MAX_UPLOAD_MB.
+enableXsrfProtection = true
+enableCORS = true
+maxUploadSize = 20

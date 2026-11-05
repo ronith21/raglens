@@ -119,10 +119,24 @@ def api_post(path: str, timeout: float = 120.0, **kwargs: Any) -> tuple[Any, str
     return response.json(), None
 
 
+_MARKDOWN_SPECIAL = re.compile(r"([\\`*_{}\[\]()#+\-.!|<>~])")
+
+
+def inert(fragment: str) -> str:
+    """Keep escaped HTML inside one HTML block: a blank line would end the block and let
+    Streamlit render the rest as Markdown (images, links, headings from untrusted documents)."""
+    return fragment.replace("\r", "").replace("\n", "<br>")
+
+
+def md_text(text: str) -> str:
+    """Escape Markdown syntax so untrusted text in labels and messages renders literally."""
+    return _MARKDOWN_SPECIAL.sub(r"\\\1", text.replace("\n", " "))
+
+
 def render_answer(text: str) -> str:
     """Escape the answer and turn [n] markers into citation badges."""
     escaped = html.escape(text)
-    return re.sub(r"\[(\d+)\]", r'<span class="cite">\1</span>', escaped)
+    return inert(re.sub(r"\[(\d+)\]", r'<span class="cite">\1</span>', escaped))
 
 
 def highlight_passage(text: str, spans: list[tuple[int, int, int]]) -> str:
@@ -136,7 +150,7 @@ def highlight_passage(text: str, spans: list[tuple[int, int, int]]) -> str:
         out.append(f'<mark title="evidence for [{index}]">{html.escape(text[start:end])}</mark>')
         cursor = end
     out.append(html.escape(text[cursor:]))
-    return f'<div class="passage">{"".join(out)}</div>'
+    return f'<div class="passage">{inert("".join(out))}</div>'
 
 
 def support_badge(support: float) -> str:
@@ -187,7 +201,8 @@ def sidebar() -> dict[str, Any]:
     }
     corpus = str((health or {}).get("corpus", ""))
     examples = BANKING_EXAMPLES if "banking" in corpus else EXAMPLES
-    return options | {"online": bool(health), "examples": examples}
+    uploads = bool((health or {}).get("uploads_enabled", True))
+    return options | {"online": bool(health), "examples": examples, "uploads_enabled": uploads}
 
 
 def ask_tab(options: dict[str, Any]) -> None:
@@ -217,7 +232,7 @@ def ask_tab(options: dict[str, Any]) -> None:
     with st.spinner("Retrieving and generating…"):
         result, error = api_post("/ask", json=payload)
     if error:
-        st.error(error)
+        st.error(md_text(error))
         return
 
     card_class = "answer-card refused" if result["refused"] else "answer-card"
@@ -254,7 +269,7 @@ def ask_tab(options: dict[str, Any]) -> None:
                 f'<span class="chunk-meta">· {html.escape(Path(c["source_path"]).name)}</span>'
                 + support_badge(c["support"])
                 + (
-                    f'<div class="evidence">{html.escape(c["evidence"])}</div>'
+                    f'<div class="evidence">{inert(html.escape(c["evidence"]))}</div>'
                     if c["evidence"]
                     else ""
                 ),
@@ -272,7 +287,9 @@ def ask_tab(options: dict[str, Any]) -> None:
         chunk = ctx["chunk"]
         marker = " ✓ cited" if i in cited else ""
         title = chunk["metadata"].get("title", chunk["doc_id"])
-        with st.expander(f"[{i}] {title} — score {ctx['score']:.4f}{marker}", expanded=i == 1):
+        with st.expander(
+            f"\\[{i}\\] {md_text(str(title))} — score {ctx['score']:.4f}{marker}", expanded=i == 1
+        ):
             diag = {k: v for k, v in ctx["metadata"].items() if k.endswith(("_rank", "_score"))}
             st.markdown(
                 f'<div class="chunk-meta">{html.escape(chunk["chunk_id"])} · chars '
@@ -355,7 +372,7 @@ def eval_tab(options: dict[str, Any]) -> None:
         with st.spinner("Evaluating every question…"):
             report, error = api_post("/eval", json=payload, timeout=600.0)
         if error:
-            st.error(error)
+            st.error(md_text(error))
             return
         cols = st.columns(5)
         cols[0].metric("MRR", f"{report['retrieval']['mrr']:.3f}")
@@ -442,6 +459,9 @@ def documents_tab(options: dict[str, Any]) -> None:
             width="stretch",
             hide_index=True,
         )
+    if not options.get("uploads_enabled", True):
+        st.info("Uploads are disabled on this deployment.")
+        return
     uploads = st.file_uploader(
         "Add documents (.md, .txt, .pdf)", type=["md", "txt", "pdf"], accept_multiple_files=True
     )
@@ -449,7 +469,7 @@ def documents_tab(options: dict[str, Any]) -> None:
         files = [("files", (u.name, u.getvalue())) for u in uploads]
         report, error = api_post("/ingest", files=files)
         if error:
-            st.error(error)
+            st.error(md_text(error))
         else:
             st.success(
                 f"Added {report['documents_added']} documents ({report['chunks_added']} chunks); "
