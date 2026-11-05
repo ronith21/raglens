@@ -1,5 +1,6 @@
 # Single-container image for a free Hugging Face Space (Docker SDK).
 # The Streamlit UI runs the FastAPI app in-process (API_URL=embedded), on the port Spaces expects.
+# Uploads are off: on a public demo anyone could otherwise poison the shared corpus.
 FROM python:3.11-slim
 
 ENV PIP_NO_CACHE_DIR=1 \
@@ -9,7 +10,8 @@ ENV PIP_NO_CACHE_DIR=1 \
     INDEX_DIR=/tmp/raglens/index \
     QUERY_LOG_PATH=/tmp/raglens/queries.db \
     USE_HASH_EMBEDDER=true \
-    LLM_PROVIDER=fake
+    LLM_PROVIDER=fake \
+    UPLOADS_ENABLED=false
 
 RUN useradd --create-home --uid 1000 user
 WORKDIR /home/user/app

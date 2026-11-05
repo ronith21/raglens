@@ -40,6 +40,11 @@ jobs:
       - name: Type-check with mypy
         run: mypy src
 
+      - name: Audit dependencies for known vulnerabilities
+        run: |
+          pip install pip-audit
+          pip-audit --skip-editable --progress-spinner off
+
       - name: Run tests with coverage
         run: pytest --cov=raglens --cov-report=term-missing --cov-report=xml tests/
 
