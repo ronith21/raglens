@@ -1,0 +1,24 @@
+services:
+  api:
+    build:
+      context: .
+      args:
+        EXTRAS: ${EXTRAS:-}
+    image: raglens:latest
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "8000:8000"
+
+  ui:
+    image: raglens:latest
+    depends_on:
+      - api
+    env_file:
+      - path: .env
+        required: false
+    command: ["streamlit", "run", "/usr/local/lib/python3.11/site-packages/raglens/ui/app.py",
+              "--server.port", "8501", "--server.address", "0.0.0.0", "--server.headless", "true"]
+    ports:
+      - "8501:8501"

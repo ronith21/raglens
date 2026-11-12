@@ -33,9 +33,17 @@ jobs:
           ruff format --check .
 
       - name: Type-check with mypy
-        run: |
-          mypy src
+        run: mypy src
 
       - name: Run tests with coverage
-        run: |
-          pytest --cov=raglens --cov-report=term-missing --cov-report=xml tests/
+        run: pytest --cov=raglens --cov-report=term-missing --cov-report=xml tests/
+
+      - name: Evaluation smoke run (offline embedders)
+        run: raglens eval --embedders lsa,hash --main-embedder lsa --chunk-sizes 512 --main-chunk-size 512 --out-dir /tmp/eval
+
+      - name: Upload evaluation report
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: /tmp/eval

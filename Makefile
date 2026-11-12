@@ -1,22 +1,27 @@
-.PHONY: install lint format test eval serve ui screenshots docker help
+.PHONY: install install-vectors lint format test eval demos serve ui screenshots docker help
 
 PYTHON ?= python3
 PIP ?= pip
 
 help:
 	@echo "Available targets:"
-	@echo "  install      Install dependencies in editable mode"
-	@echo "  lint         Run ruff and mypy"
-	@echo "  format       Run ruff format and fix"
-	@echo "  test         Run tests with coverage"
-	@echo "  eval         Run evaluation benchmark"
-	@echo "  serve        Start the FastAPI server"
-	@echo "  ui           Start the Streamlit UI"
-	@echo "  screenshots  Capture UI screenshots via Playwright"
-	@echo "  docker       Build docker image"
+	@echo "  install          Install in editable mode with dev tools"
+	@echo "  install-vectors  Also install pretrained GloVe word vectors (spaCy, ~400 MB)"
+	@echo "  lint             Run ruff and mypy"
+	@echo "  format           Run ruff format and fix"
+	@echo "  test             Run tests with coverage"
+	@echo "  eval             Run the full evaluation and write docs/proof/eval_report.md"
+	@echo "  demos            Regenerate CLI/API demo transcripts in docs/proof"
+	@echo "  serve            Start the FastAPI server"
+	@echo "  ui               Start the Streamlit UI"
+	@echo "  screenshots      Capture UI screenshots via Playwright"
+	@echo "  docker           Build the docker image"
 
 install:
 	$(PIP) install -e .[dev]
+
+install-vectors:
+	$(PIP) install -e .[dev,vectors]
 
 lint:
 	ruff check .
@@ -31,10 +36,13 @@ test:
 	pytest --cov=raglens --cov-report=term-missing tests/
 
 eval:
-	$(PYTHON) -m raglens.eval.benchmark
+	raglens eval
+
+demos:
+	./scripts/run_demos.sh
 
 serve:
-	uvicorn raglens.api.main:app --host 0.0.0.0 --port 8000 --reload
+	raglens serve
 
 ui:
 	streamlit run src/raglens/ui/app.py
