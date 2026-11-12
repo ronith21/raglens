@@ -1,0 +1,263 @@
+"""Write the evaluation results as Markdown, JSON and matplotlib charts."""
+
+import json
+from pathlib import Path
+from typing import Any
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+_COLORS = {"bm25": "#4C72B0", "dense": "#DD8452", "hybrid": "#55A868", "hybrid+rerank": "#8172B3"}
+
+
+def _f(x: float) -> str:
+    return f"{x:.3f}"
+
+
+def _row(*cells: object) -> str:
+    """Markdown table row."""
+    return "| " + " | ".join(str(c) for c in cells) + " |"
+
+
+def _ms(p50: float, p95: float) -> str:
+    return f"{p50:.2f} / {p95:.2f} ms"
+
+
+def write_charts(results: dict[str, Any], out_dir: Path) -> list[str]:
+    """Render the four report charts and return their file names."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    main = results["main"]
+    systems = list(main["retrieval"])
+    names: list[str] = []
+
+    # 1. MRR by question type and retriever.
+    groups = ["lexical", "paraphrase", "synthetic"]
+    fig, ax = plt.subplots(figsize=(7.5, 4))
+    width = 0.8 / len(systems)
+    for i, system in enumerate(systems):
+        vals = [main["retrieval"][system][g].get("mrr", 0.0) for g in groups]
+        xs = [g + i * width for g in range(len(groups))]
+        bars = ax.bar(xs, vals, width, label=system, color=_COLORS.get(system))
+        ax.bar_label(bars, fmt="%.2f", fontsize=7)
+    ax.set_xticks([g + width * (len(systems) - 1) / 2 for g in range(len(groups))])
+    ax.set_xticklabels([f"{g}\n(n={int(main['retrieval'][systems[0]][g]['n'])})" for g in groups])
+    ax.set_ylabel("MRR@10")
+    ax.set_ylim(0, 1.08)
+    ax.set_title(
+        f"Retrieval quality by question type ({main['embedder']}, {main['chunk_size']} chars)"
+    )
+    ax.legend(loc="lower right", fontsize=8)
+    fig.tight_layout()
+    fig.savefig(out_dir / "mrr_by_type.png", dpi=130)
+    plt.close(fig)
+    names.append("mrr_by_type.png")
+
+    # 2. Ablation: nDCG@10 by chunk size, one panel per embedder.
+    embedders = sorted({row["embedder"] for row in results["ablation"]})
+    fig, axes = plt.subplots(1, len(embedders), figsize=(5 * len(embedders), 3.8), sharey=True)
+    axes_list = axes if len(embedders) > 1 else [axes]
+    for ax, emb in zip(axes_list, embedders, strict=True):
+        rows = [r for r in results["ablation"] if r["embedder"] == emb]
+        sizes = sorted({r["chunk_size"] for r in rows})
+        for system in systems:
+            ys = [
+                next(r["ndcg@10"] for r in rows if r["chunk_size"] == s and r["system"] == system)
+                for s in sizes
+            ]
+            ax.plot(sizes, ys, marker="o", label=system, color=_COLORS.get(system))
+        ax.set_title(f"embedder = {emb}")
+        ax.set_xlabel("chunk size (characters)")
+        ax.set_xticks(sizes)
+        ax.grid(alpha=0.3)
+    axes_list[0].set_ylabel("nDCG@10 (hand-labelled, answerable)")
+    axes_list[0].legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(out_dir / "ablation_ndcg.png", dpi=130)
+    plt.close(fig)
+    names.append("ablation_ndcg.png")
+
+    # 3. Refusal threshold sweep on the dev split.
+    sweep = main["threshold_sweep"]
+    ts = [r["threshold"] for r in sweep]
+    fig, ax = plt.subplots(figsize=(6.5, 3.8))
+    ax.plot(ts, [r["answer_rate_answerable"] for r in sweep], label="answerable questions answered")
+    ax.plot(
+        ts, [r["refusal_rate_unanswerable"] for r in sweep], label="unanswerable questions refused"
+    )
+    ax.plot(ts, [r["balanced_accuracy"] for r in sweep], label="balanced accuracy", linewidth=2.5)
+    ax.axvline(main["refusal_threshold"], color="grey", linestyle="--", label="chosen threshold")
+    ax.set_xlabel("evidence-score threshold")
+    ax.set_ylabel("rate (dev split)")
+    ax.set_title("Choosing the refusal threshold on dev data")
+    ax.legend(fontsize=8, loc="lower left")
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(out_dir / "refusal_threshold.png", dpi=130)
+    plt.close(fig)
+    names.append("refusal_threshold.png")
+
+    # 4. Latency per retriever.
+    fig, ax = plt.subplots(figsize=(6, 3.5))
+    p50 = [main["retrieval"][s]["all"]["p50_ms"] for s in systems]
+    p95 = [main["retrieval"][s]["all"]["p95_ms"] for s in systems]
+    xs = list(range(len(systems)))
+    ax.bar([x - 0.2 for x in xs], p50, 0.4, label="p50")
+    ax.bar([x + 0.2 for x in xs], p95, 0.4, label="p95")
+    ax.set_xticks(xs)
+    ax.set_xticklabels(systems)
+    ax.set_ylabel("ms per query (top-30 chunks)")
+    ax.set_title("Retrieval latency")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(out_dir / "latency.png", dpi=130)
+    plt.close(fig)
+    names.append("latency.png")
+    return names
+
+
+def render_markdown(results: dict[str, Any], charts: list[str]) -> str:
+    """Human-readable report with tables, significance, failures and refusal analysis."""
+    cfg = results["config"]
+    main = results["main"]
+    systems = list(main["retrieval"])
+    lines: list[str] = [
+        "# RAGLens evaluation report",
+        "",
+        "Generated by `raglens eval`. Every number below comes from that command; the raw data is",
+        "in `eval_results.json` next to this file.",
+        "",
+        "## Setup",
+        "",
+        f"- Questions: {cfg['dataset_counts']} (hand-written, `data/eval/qa.jsonl`) plus "
+        f"{main['synthetic_n']} synthetic questions generated from chunks.",
+        f"- Main configuration: embedder `{main['embedder']}`, chunk size {main['chunk_size']} "
+        f"({main['num_chunks']} chunks), generator `{cfg['llm']}`, top-k {cfg['top_k']}.",
+        f"- Cross-encoder reranker `{cfg['reranker']}`: {cfg['reranker_status']}.",
+        "- Retrieval is scored at document level: chunks are collapsed to their source file, so "
+        "two chunks of the same file count once.",
+        "",
+        "## 1. Retrieval quality (answerable hand-labelled questions)",
+        "",
+        "| Retriever | Hit@1 | Hit@3 | Hit@5 | Recall@5 | MRR@10 | nDCG@10 | p50 ms | p95 ms |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for s in systems:
+        a = main["retrieval"][s]["all"]
+        lines.append(
+            f"| {s} | {_f(a['hit@1'])} | {_f(a['hit@3'])} | {_f(a['hit@5'])} | {_f(a['recall@5'])} "
+            f"| {_f(a['mrr'])} | {_f(a['ndcg@10'])} | {a['p50_ms']:.2f} | {a['p95_ms']:.2f} |"
+        )
+    lines += [
+        "",
+        "### By question type (MRR@10 / Hit@5)",
+        "",
+        "| Retriever | lexical | paraphrase | synthetic |",
+        "|---|---|---|---|",
+    ]
+    for s in systems:
+        r = main["retrieval"][s]
+        cells = [
+            f"{_f(r[g]['mrr'])} / {_f(r[g]['hit@5'])}"
+            for g in ("lexical", "paraphrase", "synthetic")
+        ]
+        lines.append(f"| {s} | " + " | ".join(cells) + " |")
+
+    lines += ["", "### Is hybrid really better? Paired bootstrap on MRR (2,000 resamples)", ""]
+    lines += ["| Comparison | Mean difference | 95% CI | Verdict |", "|---|---|---|---|"]
+    for name, sig in main["significance"].items():
+        lo, hi = sig["ci95_low"], sig["ci95_high"]
+        verdict = "significant" if lo > 0 or hi < 0 else "not significant (CI contains 0)"
+        lines.append(
+            _row(
+                name.replace("_", " "),
+                f"{sig['mean_diff']:+.3f}",
+                f"[{lo:+.3f}, {hi:+.3f}]",
+                verdict,
+            )
+        )
+
+    ans = main["answers"]
+    lines += [
+        "",
+        "## 2. Answers and refusals (test split only)",
+        "",
+        f"The refusal threshold was chosen on the dev split: **{main['refusal_threshold']:.2f}** "
+        "(share of the question's content words that the best passage must contain).",
+        "",
+        "| Metric | Value |",
+        "|---|---|",
+        _row("Unanswerable questions correctly refused", _f(ans["refusal_accuracy_unanswerable"])),
+        _row("Answerable questions wrongly refused", _f(ans["false_refusal_rate_answerable"])),
+        _row("Overall answer/refuse decision accuracy", _f(ans["decision_accuracy"])),
+        _row(
+            "Citation precision (cited passage from a relevant doc)", _f(ans["citation_precision"])
+        ),
+        _row("Groundedness (answer words found in cited passages)", _f(ans["groundedness"])),
+        _row("Token F1 against reference answer", _f(ans["answer_f1"])),
+        _row("Latency p50 / p95, retrieve", _ms(ans["retrieve_p50_ms"], ans["retrieve_p95_ms"])),
+        _row("Latency p50 / p95, generate", _ms(ans["generate_p50_ms"], ans["generate_p95_ms"])),
+        _row("Latency p50 / p95, end to end", _ms(ans["total_p50_ms"], ans["total_p95_ms"])),
+        "",
+        "## 3. Ablation: retriever x chunk size x embedder",
+        "",
+        "| Embedder | Chunk size | Chunks | Retriever | Hit@1 | Hit@5 | MRR@10 | nDCG@10 |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for r in results["ablation"]:
+        lines.append(
+            _row(
+                r["embedder"],
+                r["chunk_size"],
+                r["num_chunks"],
+                r["system"],
+                _f(r["hit@1"]),
+                _f(r["hit@5"]),
+                _f(r["mrr"]),
+                _f(r["ndcg@10"]),
+            )
+        )
+
+    lines += [
+        "",
+        "## 4. Where the retrievers disagree",
+        "",
+        "| Id | Type | Question | Relevant | BM25 | Dense | Hybrid |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for d in main["disagreements"]:
+        lines.append(
+            f"| {d['id']} | {d['type']} | {d['question']} | {', '.join(d['relevant'])} "
+            f"| {_f(d['bm25_mrr'])} | {_f(d['dense_mrr'])} | {_f(d['hybrid_mrr'])} |"
+        )
+    lines += ["", "## 5. Hybrid misses (relevant document not in top 5)", ""]
+    if main["failures"]:
+        lines += ["| Id | Type | Question | Relevant | Hybrid top 3 |", "|---|---|---|---|---|"]
+        for f in main["failures"]:
+            lines.append(
+                _row(
+                    f["id"],
+                    f["type"],
+                    f["question"],
+                    ", ".join(f["relevant"]),
+                    ", ".join(f["top3"]),
+                )
+            )
+    else:
+        lines.append("None.")
+    lines += ["", "## Charts", ""]
+    lines += [f"![{c}]({c})" for c in charts]
+    lines.append("")
+    return "\n".join(lines)
+
+
+def write_report(results: dict[str, Any], out_dir: str | Path) -> Path:
+    """Write ``eval_results.json``, the charts and ``eval_report.md``; return the report path."""
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "eval_results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
+    charts = write_charts(results, out)
+    report = out / "eval_report.md"
+    report.write_text(render_markdown(results, charts), encoding="utf-8")
+    return report
