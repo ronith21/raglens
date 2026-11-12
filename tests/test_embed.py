@@ -1,5 +1,8 @@
 """Unit tests for embedding models: HashEmbedder and SentenceTransformerEmbedder."""
 
+import sys
+import types
+
 import numpy as np
 import pytest
 
@@ -63,11 +66,9 @@ def test_sentence_transformer_embedder_fallback(monkeypatch: pytest.MonkeyPatch)
         raise ImportError("Simulated missing sentence-transformers")
 
     embedder = SentenceTransformerEmbedder(model_name="nonexistent-model", fallback_to_hash=True)
-    monkeypatch.setattr(
-        "sentence_transformers.SentenceTransformer",
-        mock_import,
-        raising=False,
-    )
+    fake_module = types.ModuleType("sentence_transformers")
+    fake_module.SentenceTransformer = mock_import  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "sentence_transformers", fake_module)
     embedder._load_model()
     assert embedder._fallback_embedder is not None
     assert embedder.dimension == 384
@@ -85,6 +86,8 @@ def test_sentence_transformer_embedder_raises_when_no_fallback(
     def mock_fail(*args: object, **kwargs: object) -> None:
         raise RuntimeError("Model download failed")
 
-    monkeypatch.setattr("sentence_transformers.SentenceTransformer", mock_fail, raising=False)
+    fake_module = types.ModuleType("sentence_transformers")
+    fake_module.SentenceTransformer = mock_fail  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "sentence_transformers", fake_module)
     with pytest.raises(RuntimeError, match="Model download failed"):
         embedder._load_model()

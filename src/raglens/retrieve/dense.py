@@ -5,7 +5,7 @@ from typing import Any
 import faiss
 import numpy as np
 
-from raglens.embed.base import BaseEmbedder
+from raglens.embed.base import BaseEmbedder, FittableEmbedder
 from raglens.ingest.models import Chunk
 from raglens.retrieve.base import BaseRetriever, SearchResult
 
@@ -28,12 +28,28 @@ class DenseRetriever(BaseRetriever):
             return
 
         texts = [chunk.text for chunk in self.chunks]
+        if isinstance(self.embedder, FittableEmbedder):
+            self.embedder.fit(texts)
         embeddings = self.embedder.embed_texts(texts)
 
         dim = embeddings.shape[1]
         self.index = faiss.IndexFlatIP(dim)
         embeddings_c = np.ascontiguousarray(embeddings, dtype=np.float32)
         self.index.add(embeddings_c)
+
+    def attach_index(self, chunks: list[Chunk], index: "faiss.Index") -> None:
+        """Use a pre-built FAISS index (for example loaded from disk) instead of re-embedding."""
+        if index.ntotal != len(chunks):
+            raise ValueError(
+                f"FAISS index holds {index.ntotal} vectors but got {len(chunks)} chunks"
+            )
+        if index.d != self.embedder.dimension:
+            raise ValueError(
+                f"FAISS dimension {index.d} does not match embedder dimension "
+                f"{self.embedder.dimension}"
+            )
+        self.chunks = list(chunks)
+        self.index = index
 
     def retrieve(self, query: str, top_k: int = 5) -> list[SearchResult]:
         """Retrieve top_k chunks by cosine similarity."""

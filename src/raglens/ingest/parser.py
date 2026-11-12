@@ -22,6 +22,7 @@ def parse_text_file(path: str | Path) -> Document:
     raw_bytes = path.read_bytes()
     text = raw_bytes.decode("utf-8", errors="replace")
     doc_id = compute_doc_id(path, raw_bytes)
+    title = path.stem.replace("_", " ").title()
     page = DocumentPage(
         page_number=1,
         text=text,
@@ -31,10 +32,15 @@ def parse_text_file(path: str | Path) -> Document:
     return Document(
         doc_id=doc_id,
         source_path=str(path),
-        title=path.stem.replace("_", " ").title(),
+        title=title,
         text=text,
         pages=[page],
-        metadata={"extension": path.suffix.lower(), "size_bytes": len(raw_bytes)},
+        metadata={
+            "extension": path.suffix.lower(),
+            "size_bytes": len(raw_bytes),
+            "source": path.stem,
+            "title": title,
+        },
     )
 
 
@@ -64,7 +70,12 @@ def parse_markdown_file(path: str | Path) -> Document:
         title=title,
         text=text,
         pages=[page],
-        metadata={"extension": path.suffix.lower(), "size_bytes": len(raw_bytes)},
+        metadata={
+            "extension": path.suffix.lower(),
+            "size_bytes": len(raw_bytes),
+            "source": path.stem,
+            "title": title,
+        },
     )
 
 
@@ -104,7 +115,12 @@ def parse_pdf_file(path: str | Path) -> Document:
         title=path.stem.replace("_", " ").title(),
         text=full_text,
         pages=pages,
-        metadata={"extension": path.suffix.lower(), "total_pages": len(pages)},
+        metadata={
+            "extension": path.suffix.lower(),
+            "total_pages": len(pages),
+            "source": path.stem,
+            "title": path.stem.replace("_", " ").title(),
+        },
     )
 
 
