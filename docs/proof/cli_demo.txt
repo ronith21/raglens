@@ -1,0 +1,44 @@
+$ raglens ingest
+Could not load all-MiniLM-L6-v2 (No module named 'sentence_transformers'); trying GloVe word vectors
+Indexed 20 documents as 196 chunks with embedder=glove -> data/index
+
+$ raglens ask "How does Reciprocal Rank Fusion combine BM25 and dense rankings?"
+Could not load all-MiniLM-L6-v2 (No module named 'sentence_transformers'); trying GloVe word vectors
+
+Reciprocal Rank Fusion (Cormack et al., 2009) solves score normalization by operating solely on rank positions rather than arbitrary raw score magnitudes. [2] Given a set of rankings $R$ (e.g. $R = \{\text{dense}, \text{bm25}\}$), the RRF score of any document $d$ is defined as: [2]
+
+  [1] 12_hybrid_retrieval_rrf  score=0.0325
+ *[2] 12_hybrid_retrieval_rrf  score=0.0325
+  [3] 12_hybrid_retrieval_rrf  score=0.0315
+  [4] 12_hybrid_retrieval_rrf  score=0.0315
+  [5] 09_retrieval_augmented_generation  score=0.0305
+
+evidence=1.00  timings(ms)={"retrieve": 1.6727260001516697, "generate": 0.3203180001492001, "total": 2.269684000111738}
+
+$ raglens ask "How do I stop a model from memorising its training examples?"
+Could not load all-MiniLM-L6-v2 (No module named 'sentence_transformers'); trying GloVe word vectors
+
+Practitioners frequently employ learning rate warmup—gradually scaling $\eta$ from zero during early iterations—to prevent gradient instability when model weights are random. [1] Following warmup, learning rates typically decay according to cosine annealing or polynomial decay schedules until training concludes. [1]
+
+ *[1] 01_gradient_descent  score=0.0288
+  [2] 09_retrieval_augmented_generation  score=0.0284
+  [3] 14_class_imbalance_strategies  score=0.0275
+  [4] 14_class_imbalance_strategies  score=0.0267
+  [5] 19_hallucination_and_groundedness  score=0.0164
+
+evidence=0.40  timings(ms)={"retrieve": 1.423553999984506, "generate": 0.3336059999128338, "total": 2.110152999875936}
+
+$ raglens ask "What is the capital of Australia?"
+Could not load all-MiniLM-L6-v2 (No module named 'sentence_transformers'); trying GloVe word vectors
+
+I don't know based on the provided documents.
+
+(refused: evidence score 0.00 is below the threshold 0.35)
+  [1] 16_mlops_production_systems  score=0.0300
+  [2] 07_tokenization_algorithms  score=0.0296
+  [3] 07_tokenization_algorithms  score=0.0291
+  [4] 15_anomaly_detection  score=0.0288
+  [5] 10_retrieval_evaluation_metrics  score=0.0270
+
+evidence=0.00  timings(ms)={"retrieve": 1.4425120000396419, "generate": 0.0, "total": 1.8342500000017026}
+

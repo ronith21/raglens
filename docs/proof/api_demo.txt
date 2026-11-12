@@ -1,0 +1,141 @@
+$ curl /health
+{
+    "status": "ok",
+    "version": "0.1.0",
+    "chunks": 196,
+    "embedder": "glove",
+    "llm": "fake",
+    "reranker": false,
+    "refusal_threshold": 0.35
+}
+
+$ POST /ask {"question": "What do the k1 and b parameters control in BM25?", "top_k": 3}
+{
+    "question": "What do the k1 and b parameters control in BM25?",
+    "answer": "Traditional software version control tracks code changes via Git. [1] Tools like DVC (Data Version Control) track immutable datasets, feature stores, and trained model weights alongside code commits, ensuring deterministic experimental reproducibility. [1]",
+    "refused": false,
+    "refusal_reason": null,
+    "evidence_score": 0.5,
+    "retriever": "hybrid",
+    "llm": "fake",
+    "citations": [
+        {
+            "number": 1,
+            "chunk_id": "a2374a79e1bcb032_chunk_0004",
+            "source": "16_mlops_production_systems",
+            "title": "MLOps: Machine Learning Operations and System Lifecycle"
+        }
+    ],
+    "invalid_citations": [],
+    "contexts": [
+        {
+            "number": 1,
+            "chunk_id": "a2374a79e1bcb032_chunk_0004",
+            "source": "16_mlops_production_systems",
+            "title": "MLOps: Machine Learning Operations and System Lifecycle",
+            "page": 1,
+            "score": 0.03021353930031804,
+            "text": "## Core Pillars of MLOps\n\n### 1. Data and Pipeline Versioning\n\nTraditional software version control tracks code changes via Git. In machine learning, model outputs depend equally on the training data and random initialization states. Tools like DVC (Data Version Control) track immutable datasets, feature stores, and trained model weights alongside code commits, ensuring deterministic experimental reproducibility.\n\n### 2. Automated Testing and CI/CD",
+            "signals": {
+                "bm25_rank": 2.0,
+                "bm25_score": 8.749564813124698,
+                "dense_rank": 11.0,
+                "dense_score": 0.2015514224767685,
+                "rrf_score": 0.03021353930031804
+            }
+        },
+        {
+            "number": 2,
+            "chunk_id": "a2374a79e1bcb032_chunk_0005",
+            "source": "16_mlops_production_systems",
+            "title": "MLOps: Machine Learning Operations and System Lifecycle",
+            "page": 1,
+            "score": 0.030158730158730156,
+            "text": "Traditional software version control tracks code changes via Git. In machine learning, model outputs depend equally on the training data and random initialization states. Tools like DVC (Data Version Control) track immutable datasets, feature stores, and trained model weights alongside code commits, ensuring deterministic experimental reproducibility.\n\n### 2. Automated Testing and CI/CD\n\nProduction ML pipelines require specialized automated verification stages:",
+            "signals": {
+                "bm25_rank": 3.0,
+                "bm25_score": 8.636681820278573,
+                "dense_rank": 10.0,
+                "dense_score": 0.2048214226961136,
+                "rrf_score": 0.030158730158730156
+            }
+        },
+        {
+            "number": 3,
+            "chunk_id": "c2f57d72497b7026_chunk_0006",
+            "source": "11_lexical_search_bm25",
+            "title": "Lexical Search, BM25, and Inverted Indices",
+            "page": 1,
+            "score": 0.029906956136464335,
+            "text": "- $k_1$ is a positive tuning parameter (typically between 1.2 and 2.0) that controls term frequency saturation. Unlike raw TF, as $f(q_i, D)$ grows large, its marginal contribution asymptotically approaches $(k_1 + 1)$.\n- $b$ is a tuning parameter (typically 0.75) that governs document length penalization. When $b=1$, the model completely scales term frequencies relative to document length; when $b=0$, length normalization is disabled.\n\n## Inverse Document Frequency (IDF)",
+            "signals": {
+                "bm25_rank": 14.0,
+                "bm25_score": 6.440570486262025,
+                "dense_rank": 1.0,
+                "dense_score": 0.30972427129745483,
+                "rrf_score": 0.029906956136464335
+            }
+        }
+    ],
+    "timings_ms": {
+        "retrieve": 1.5853070001412561,
+        "generate": 0.2902869998706592,
+        "total": 2.112752999892109
+    }
+}
+
+$ POST /ask {"question": "What is the capital of Australia?"}
+{'answer': "I don't know based on the provided documents.", 'refused': True, 'refusal_reason': 'evidence score 0.00 is below the threshold 0.35'}
+
+$ POST /ask {"question": "x", "llm_provider": "openai"}   # unknown field
+HTTP 422
+
+$ curl -F files=@zorblax.md /ingest
+{"files":["zorblax.md"],"chunks_added":1,"total_chunks":197}
+
+$ POST /ask {"question": "How often does the zorblax protocol rotate widgets?"}
+{'answer': 'The zorblax protocol rotates quantum widgets every ninety seconds. [1]', 'refused': False}
+cited: ['zorblax']
+
+$ curl -F files=@notes.exe /ingest
+{"detail":"Unsupported file type: notes.exe"}  HTTP 400
+
+$ POST /eval {"retriever": "hybrid", "split": "test"}
+{
+    "retriever": "hybrid",
+    "split": "test",
+    "questions": 29,
+    "retrieval": {
+        "mrr": 0.7657,
+        "hit@1": 0.6667,
+        "recall@1": 0.6667,
+        "ndcg@1": 0.6667,
+        "hit@3": 0.875,
+        "recall@3": 0.875,
+        "ndcg@3": 0.7872,
+        "hit@5": 0.875,
+        "recall@5": 0.875,
+        "ndcg@5": 0.7872,
+        "hit@10": 0.9583,
+        "recall@10": 0.9375,
+        "ndcg@10": 0.8071,
+        "p50_ms": 0.9686,
+        "p95_ms": 1.6729,
+        "n": 24.0
+    },
+    "answers": {
+        "n": 29.0,
+        "refusal_accuracy_unanswerable": 1.0,
+        "false_refusal_rate_answerable": 0.1667,
+        "decision_accuracy": 0.8621,
+        "citation_precision": 0.725,
+        "groundedness": 1.0,
+        "answer_f1": 0.198,
+        "retrieve_p50_ms": 0.679,
+        "retrieve_p95_ms": 0.937,
+        "generate_p50_ms": 0.1273,
+        "generate_p95_ms": 0.2079,
+        "total_p50_ms": 1.0277,
+        "total_p95_ms": 1.4414
+    }
+}

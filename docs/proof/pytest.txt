@@ -1,69 +1,153 @@
 ============================= test session starts ==============================
-platform linux -- Python 3.12.13, pytest-9.2.0, pluggy-1.7.0 -- /home/jules/.pyenv/versions/3.12.13/bin/python3.12
-cachedir: .pytest_cache
-rootdir: /app
+platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- /raglens/.venv/bin/python3
+rootdir: /raglens
 configfile: pyproject.toml
 plugins: anyio-4.16.0, cov-7.1.0
-collecting ... collected 27 items
+collecting ... collected 89 items
 
-tests/test_chunking.py::test_chunker_overlap_greater_than_or_equal_to_size_rejected PASSED [  3%]
-tests/test_chunking.py::test_chunk_empty_document PASSED                 [  7%]
-tests/test_chunking.py::test_chunk_unicode_characters PASSED             [ 11%]
-tests/test_chunking.py::test_one_huge_paragraph PASSED                   [ 14%]
-tests/test_chunking.py::test_pdf_page_tracking_in_chunks PASSED          [ 18%]
-tests/test_chunking.py::test_sentence_aware_chunker PASSED               [ 22%]
-tests/test_config.py::test_settings_default PASSED                       [ 25%]
-tests/test_embed.py::test_hash_embedder_dimension_and_shape PASSED       [ 29%]
-tests/test_embed.py::test_hash_embedder_invalid_dimension PASSED         [ 33%]
-tests/test_embed.py::test_hash_embedder_determinism PASSED               [ 37%]
-tests/test_embed.py::test_hash_embedder_normalization PASSED             [ 40%]
-tests/test_embed.py::test_hash_embedder_empty_list PASSED                [ 44%]
-tests/test_embed.py::test_sentence_transformer_embedder_fallback PASSED  [ 48%]
-tests/test_embed.py::test_sentence_transformer_embedder_raises_when_no_fallback PASSED [ 51%]
-tests/test_ingest.py::test_empty_text_file PASSED                        [ 55%]
-tests/test_ingest.py::test_empty_markdown_file PASSED                    [ 59%]
-tests/test_ingest.py::test_unicode_handling PASSED                       [ 62%]
-tests/test_ingest.py::test_pdf_page_tracking PASSED                      [ 66%]
-tests/test_ingest.py::test_unsupported_file_format PASSED                [ 70%]
-tests/test_ingest.py::test_ingest_directory PASSED                       [ 74%]
-tests/test_ingest.py::test_deterministic_doc_id PASSED                   [ 77%]
-tests/test_retrieval.py::test_reciprocal_rank_fusion_hand_computed_example PASSED [ 81%]
-tests/test_retrieval.py::test_retrieval_determinism PASSED               [ 85%]
-tests/test_retrieval.py::test_index_save_load_round_trip PASSED          [ 88%]
-tests/test_retrieval.py::test_empty_index_retrieval PASSED               [ 92%]
-tests/test_retrieval.py::test_k_larger_than_corpus PASSED                [ 96%]
+tests/test_api.py::test_health PASSED                                    [  1%]
+tests/test_api.py::test_ask_answers_and_refuses PASSED                   [  2%]
+tests/test_api.py::test_ask_validation[payload0] PASSED                  [  3%]
+tests/test_api.py::test_ask_validation[payload1] PASSED                  [  4%]
+tests/test_api.py::test_ask_validation[payload2] PASSED                  [  5%]
+tests/test_api.py::test_ask_validation[payload3] PASSED                  [  6%]
+tests/test_api.py::test_ask_validation[payload4] PASSED                  [  7%]
+tests/test_api.py::test_ask_llm_failure_returns_503 PASSED               [  8%]
+tests/test_api.py::test_ingest_adds_searchable_document PASSED           [ 10%]
+tests/test_api.py::test_ingest_rejects_bad_files[malware.exe-MZ-400] PASSED [ 11%]
+tests/test_api.py::test_ingest_rejects_bad_files[big.txt-content1-413] PASSED [ 12%]
+tests/test_api.py::test_ingest_rejects_bad_files[fake.pdf-not a pdf-400] PASSED [ 13%]
+tests/test_api.py::test_ingest_rejects_bad_files[empty.txt-   -400] PASSED [ 14%]
+tests/test_api.py::test_eval_endpoint PASSED                             [ 15%]
+tests/test_api.py::test_eval_endpoint_missing_dataset PASSED             [ 16%]
+tests/test_chunking.py::test_chunker_overlap_greater_than_or_equal_to_size_rejected PASSED [ 17%]
+tests/test_chunking.py::test_chunk_empty_document PASSED                 [ 19%]
+tests/test_chunking.py::test_chunk_unicode_characters PASSED             [ 20%]
+tests/test_chunking.py::test_one_huge_paragraph PASSED                   [ 21%]
+tests/test_chunking.py::test_pdf_page_tracking_in_chunks PASSED          [ 22%]
+tests/test_chunking.py::test_sentence_aware_chunker PASSED               [ 23%]
+tests/test_cli.py::test_ingest_then_ask PASSED                           [ 24%]
+tests/test_cli.py::test_ask_rejects_unknown_retriever PASSED             [ 25%]
+tests/test_cli.py::test_eval_writes_report PASSED                        [ 26%]
+tests/test_cli.py::test_eval_validates_main_choices PASSED               [ 28%]
+tests/test_config.py::test_settings_default PASSED                       [ 29%]
+tests/test_embed.py::test_hash_embedder_dimension_and_shape PASSED       [ 30%]
+tests/test_embed.py::test_hash_embedder_invalid_dimension PASSED         [ 31%]
+tests/test_embed.py::test_hash_embedder_determinism PASSED               [ 32%]
+tests/test_embed.py::test_hash_embedder_normalization PASSED             [ 33%]
+tests/test_embed.py::test_hash_embedder_empty_list PASSED                [ 34%]
+tests/test_embed.py::test_sentence_transformer_embedder_fallback PASSED  [ 35%]
+tests/test_embed.py::test_sentence_transformer_embedder_raises_when_no_fallback PASSED [ 37%]
+tests/test_embedders_learned.py::test_lsa_requires_fit_and_normalises PASSED [ 38%]
+tests/test_embedders_learned.py::test_lsa_groups_cooccurring_topics PASSED [ 39%]
+tests/test_embedders_learned.py::test_lsa_unknown_words_map_to_zero_and_validation PASSED [ 40%]
+tests/test_embedders_learned.py::test_lsa_state_round_trip PASSED        [ 41%]
+tests/test_embedders_learned.py::test_index_store_restores_fitted_embedder_without_reembedding PASSED [ 42%]
+tests/test_embedders_learned.py::test_attach_index_validates_shapes PASSED [ 43%]
+tests/test_embedders_learned.py::test_word_vectors_capture_synonyms_without_shared_words PASSED [ 44%]
+tests/test_embedders_learned.py::test_word_vectors_state_round_trip PASSED [ 46%]
+tests/test_embedders_learned.py::test_word_vectors_load_real_model_is_lazy PASSED [ 47%]
+tests/test_embedders_learned.py::test_factory_choices_and_labels PASSED  [ 48%]
+tests/test_eval.py::test_rank_metrics_hand_computed PASSED               [ 49%]
+tests/test_eval.py::test_doc_ranking_collapses_chunks PASSED             [ 50%]
+tests/test_eval.py::test_answer_metrics PASSED                           [ 51%]
+tests/test_eval.py::test_percentile_and_bootstrap PASSED                 [ 52%]
+tests/test_eval.py::test_dataset_file_is_well_formed PASSED              [ 53%]
+tests/test_eval.py::test_dataset_errors PASSED                           [ 55%]
+tests/test_eval.py::test_synthetic_questions_point_at_their_source PASSED [ 56%]
+tests/test_eval.py::test_threshold_tuning_separates_answerable PASSED    [ 57%]
+tests/test_eval.py::test_full_evaluation_and_report PASSED               [ 58%]
+tests/test_ingest.py::test_empty_text_file PASSED                        [ 59%]
+tests/test_ingest.py::test_empty_markdown_file PASSED                    [ 60%]
+tests/test_ingest.py::test_unicode_handling PASSED                       [ 61%]
+tests/test_ingest.py::test_pdf_page_tracking PASSED                      [ 62%]
+tests/test_ingest.py::test_unsupported_file_format PASSED                [ 64%]
+tests/test_ingest.py::test_ingest_directory PASSED                       [ 65%]
+tests/test_ingest.py::test_deterministic_doc_id PASSED                   [ 66%]
+tests/test_llm.py::test_fake_llm_extracts_and_cites PASSED               [ 67%]
+tests/test_llm.py::test_fake_llm_does_not_pad_with_weak_sentences PASSED [ 68%]
+tests/test_llm.py::test_fake_llm_refuses_without_overlap_and_dedupes PASSED [ 69%]
+tests/test_llm.py::test_prompt_numbers_passages PASSED                   [ 70%]
+tests/test_llm.py::test_openai_compat_success_and_auth_header PASSED     [ 71%]
+tests/test_llm.py::test_openai_compat_bad_payloads PASSED                [ 73%]
+tests/test_llm.py::test_ollama_success_and_empty PASSED                  [ 74%]
+tests/test_llm.py::test_retries_with_exponential_backoff_then_succeeds PASSED [ 75%]
+tests/test_llm.py::test_client_errors_are_not_retried_and_exhaustion_raises PASSED [ 76%]
+tests/test_llm.py::test_build_llm_by_provider PASSED                     [ 77%]
+tests/test_pipeline.py::test_answer_is_cited_and_grounded PASSED         [ 78%]
+tests/test_pipeline.py::test_unanswerable_question_is_refused PASSED     [ 79%]
+tests/test_pipeline.py::test_every_retriever_mode_works[bm25] PASSED     [ 80%]
+tests/test_pipeline.py::test_every_retriever_mode_works[dense] PASSED    [ 82%]
+tests/test_pipeline.py::test_every_retriever_mode_works[hybrid] PASSED   [ 83%]
+tests/test_pipeline.py::test_hybrid_contexts_explain_both_rankings PASSED [ 84%]
+tests/test_pipeline.py::test_invalid_inputs PASSED                       [ 85%]
+tests/test_pipeline.py::test_out_of_range_citations_are_flagged PASSED   [ 86%]
+tests/test_pipeline.py::test_model_abstention_is_a_refusal PASSED        [ 87%]
+tests/test_pipeline.py::test_rerank_stage_is_timed_and_applied PASSED    [ 88%]
+tests/test_pipeline.py::test_evidence_score_is_word_coverage PASSED      [ 89%]
+tests/test_pipeline.py::test_text_helpers PASSED                         [ 91%]
+tests/test_pipeline.py::test_build_pipeline_indexes_then_loads_saved_index PASSED [ 92%]
+tests/test_pipeline.py::test_load_chunks_rejects_empty_folder PASSED     [ 93%]
+tests/test_retrieval.py::test_reciprocal_rank_fusion_hand_computed_example PASSED [ 94%]
+tests/test_retrieval.py::test_retrieval_determinism PASSED               [ 95%]
+tests/test_retrieval.py::test_index_save_load_round_trip PASSED          [ 96%]
+tests/test_retrieval.py::test_empty_index_retrieval PASSED               [ 97%]
+tests/test_retrieval.py::test_k_larger_than_corpus PASSED                [ 98%]
 tests/test_retrieval.py::test_cross_encoder_reranker_fallback PASSED     [100%]
 
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /raglens/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 ================================ tests coverage ================================
-_______________ coverage: platform linux, python 3.12.13-final-0 _______________
+_______________ coverage: platform linux, python 3.13.18-final-0 _______________
 
 Name                                        Stmts   Miss  Cover   Missing
 -------------------------------------------------------------------------
 src/raglens/__init__.py                         1      0   100%
 src/raglens/api/__init__.py                     0      0   100%
+src/raglens/api/main.py                        92      1    99%   91
 src/raglens/chunking/__init__.py                2      0   100%
-src/raglens/chunking/splitter.py              168     30    82%   12, 16, 38, 66-69, 87, 98, 102-108, 114, 144, 177, 181, 198, 219-223, 253-255, 258
+src/raglens/chunking/splitter.py              168     24    86%   12, 16, 38, 87, 102-108, 114, 144, 181, 198, 219-223, 253-255, 258
 src/raglens/cli/__init__.py                     0      0   100%
-src/raglens/config.py                          24      0   100%
+src/raglens/cli/main.py                        71      5    93%   24, 79, 135-138
+src/raglens/config.py                          33      0   100%
 src/raglens/embed/__init__.py                   4      0   100%
-src/raglens/embed/base.py                      14      2    86%   16, 24
+src/raglens/embed/base.py                      27      2    93%   17, 25
+src/raglens/embed/factory.py                   41      4    90%   44, 63-65
 src/raglens/embed/hash.py                      37      1    97%   47
-src/raglens/embed/sentence_transformer.py      43      8    81%   40-42, 58, 66-75
+src/raglens/embed/lsa.py                       77      1    99%   48
+src/raglens/embed/sentence_transformer.py      43      7    84%   40-42, 66-75
+src/raglens/embed/word_vectors.py              90      2    98%   69-70
 src/raglens/eval/__init__.py                    0      0   100%
+src/raglens/eval/dataset.py                    30      0   100%
+src/raglens/eval/metrics.py                    78      0   100%
+src/raglens/eval/report.py                    131      1    99%   248
+src/raglens/eval/runner.py                    158      3    98%   76, 101, 222
+src/raglens/eval/synthetic.py                  24      0   100%
 src/raglens/ingest/__init__.py                  3      0   100%
 src/raglens/ingest/models.py                   22      0   100%
-src/raglens/ingest/parser.py                   65      0   100%
-src/raglens/llm/__init__.py                     0      0   100%
-src/raglens/pipeline/__init__.py                0      0   100%
+src/raglens/ingest/parser.py                   66      0   100%
+src/raglens/llm/__init__.py                    15      0   100%
+src/raglens/llm/base.py                        44      0   100%
+src/raglens/llm/fake.py                        31      0   100%
+src/raglens/llm/ollama.py                      16      0   100%
+src/raglens/llm/openai_compat.py               21      0   100%
+src/raglens/pipeline/__init__.py                3      0   100%
+src/raglens/pipeline/builder.py                34      0   100%
+src/raglens/pipeline/rag.py                    97      0   100%
 src/raglens/rerank/__init__.py                  2      0   100%
-src/raglens/rerank/cross_encoder.py            46     17    63%   18, 39, 45, 55, 60, 66-89
+src/raglens/rerank/cross_encoder.py            46     17    63%   18, 39, 44-45, 60, 66-89
 src/raglens/retrieve/__init__.py                6      0   100%
 src/raglens/retrieve/base.py                   14      1    93%   27
 src/raglens/retrieve/bm25.py                   41      5    88%   41, 50, 71, 80-81
-src/raglens/retrieve/dense.py                  39      4    90%   27-28, 52, 66
+src/raglens/retrieve/dense.py                  48      4    92%   27-28, 68, 82
 src/raglens/retrieve/hybrid.py                 51      1    98%   19
-src/raglens/retrieve/store.py                  32      1    97%   48
+src/raglens/retrieve/store.py                  40      3    92%   56, 76-77
+src/raglens/textutil.py                        37      0   100%
 -------------------------------------------------------------------------
-TOTAL                                         614     70    89%
-Required test coverage of 85.0% reached. Total coverage: 88.60%
-============================= 27 passed in 42.53s ==============================
+TOTAL                                        1744     82    95%
+Required test coverage of 85.0% reached. Total coverage: 95.30%
+======================== 89 passed, 1 warning in 9.47s =========================

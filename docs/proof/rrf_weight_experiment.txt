@@ -1,0 +1,14 @@
+Weighted RRF: MRR@10 on dev / test (answerable hand-labelled questions)
+
+embedder=glove
+  w      0.0    0.2    0.3    0.4    0.5    0.6    0.7    0.8    1.0
+  dev  0.797  0.867  0.852  0.844  0.844  0.867  0.883  0.879  0.828
+  test 0.663  0.724  0.745  0.752  0.769  0.769  0.757  0.780  0.854
+  dev-chosen w=0.7: test 0.757 vs plain RRF (w=0.5) 0.769; best possible on test 0.854
+
+embedder=lsa
+  w      0.0    0.2    0.3    0.4    0.5    0.6    0.7    0.8    1.0
+  dev  0.825  0.831  0.831  0.831  0.851  0.851  0.831  0.833  0.828
+  test 0.849  0.849  0.851  0.851  0.836  0.857  0.856  0.864  0.854
+  dev-chosen w=0.5: test 0.836 vs plain RRF (w=0.5) 0.836; best possible on test 0.864
+

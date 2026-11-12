@@ -1,0 +1,6 @@
+$ raglens eval
+          bm25: MRR=0.841 Hit@5=0.939 nDCG@10=0.867
+         dense: MRR=0.729 Hit@5=0.918 nDCG@10=0.777
+        hybrid: MRR=0.806 Hit@5=0.918 nDCG@10=0.844
+refusal threshold=0.35  refused unanswerable=1.00  false refusals=0.17  citation precision=0.72
+Report written to docs/proof/eval_report.md
