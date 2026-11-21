@@ -101,3 +101,6 @@ data/index/
 data/index_*/
 data/logs/
 docs/proof/_video_raw/
+
+# graphify knowledge-graph output (local only)
+graphify-out/
